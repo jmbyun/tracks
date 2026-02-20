@@ -1,0 +1,163 @@
+.browser-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.browser-container {
+    max-width: 1024px;
+    width: 100%;
+    margin: 0 auto;
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.browser-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.crumb {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    color: var(--text-secondary);
+}
+
+.crumb:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.crumb.active {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.crumb-part {
+    display: flex;
+    align-items: center;
+}
+
+.separator {
+    color: var(--text-secondary);
+    margin: 0 4px;
+    opacity: 0.5;
+}
+
+.browser-error {
+    color: #f85149;
+    font-size: 0.9rem;
+    background-color: rgba(248, 81, 73, 0.1);
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.browser-content {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-secondary);
+}
+
+.browser-loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.file-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.file-table th {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-secondary);
+    z-index: 1;
+}
+
+.file-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.file-row {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.file-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Specific hover on dark themes if applicable, but we use an rgba */
+
+.file-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.folder-icon {
+    color: #8ab4f8;
+    /* Google Drive folder blue */
+    font-size: 1.2rem;
+}
+
+.file-icon {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+}
+
+.file-name {
+    font-weight: 500;
+}
+
+.file-date,
+.file-size {
+    color: var(--text-secondary);
+}
+
+.up-dir {
+    color: var(--text-secondary);
+}
+
+.up-dir .file-name-cell i {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.empty-dir {
+    text-align: center;
+    padding: 40px !important;
+    color: var(--text-secondary) !important;
+}

@@ -4,11 +4,14 @@ import Sidebar from './components/Sidebar'
 import ChatArea from './components/ChatArea'
 import LoginPage from './components/LoginPage'
 import SettingsPage from './components/SettingsPage'
+import BrowserPage from './components/BrowserPage'
 import { getApiKey, getAuthHeaders, clearApiKey, validateApiKey } from './auth'
+
 
 import './App.css'
 
-function ChatPage({ onLogout, showSettings }) {
+function ChatPage({ onLogout, showSettings, showBrowser }) {
+
   const navigate = useNavigate()
 
   const { sessionId: urlSessionId } = useParams()
@@ -305,17 +308,24 @@ function ChatPage({ onLogout, showSettings }) {
             <h1 className="app-title">Tracks</h1>
           </div>
           <div className="header-right">
-            <button className="settings-button" onClick={() => navigate('/settings')}>
+            <button className="browser-button" onClick={() => navigate('/browser')} title="Browse Files">
+              <i className="fa fa-folder-open"></i>
+            </button>
+            <button className="settings-button" onClick={() => navigate('/settings')} title="Settings">
               <i className="fa fa-cog"></i>
             </button>
           </div>
+
         </header>
 
 
         {showSettings ? (
           <SettingsPage />
+        ) : showBrowser ? (
+          <BrowserPage />
         ) : (
           <ChatArea
+
             messages={messages}
             sessionId={sessionId}
             onSendMessage={handleSendMessage}
@@ -377,7 +387,9 @@ function App() {
       <Route path="/" element={<ChatPage onLogout={handleLogout} />} />
       <Route path="/sessions/:sessionId" element={<ChatPage onLogout={handleLogout} />} />
       <Route path="/settings" element={<ChatPage onLogout={handleLogout} showSettings={true} />} />
+      <Route path="/browser" element={<ChatPage onLogout={handleLogout} showBrowser={true} />} />
     </Routes>
+
 
   )
 }

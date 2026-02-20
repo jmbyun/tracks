@@ -34,9 +34,11 @@
 .header-right {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.settings-button {
+.settings-button,
+.browser-button {
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -47,10 +49,12 @@
   transition: all 0.2s;
 }
 
-.settings-button:hover {
+.settings-button:hover,
+.browser-button:hover {
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
 }
+
 
 
 .app-header.scrolled {
