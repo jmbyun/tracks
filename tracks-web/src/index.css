@@ -17,10 +17,9 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Noto Sans', 'Noto Sans KR', sans-serif;
   -webkit-font-smoothing: antialiased;
+
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -29,4 +28,3 @@ body {
 #root {
   width: 100%;
 }
-

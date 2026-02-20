@@ -45,14 +45,29 @@
   background-color: var(--bg-tertiary);
 }
 
+.app-logo {
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  border-radius: 8px;
+}
+
 .app-title {
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
+
+@media (max-width: 767px) {
+  .app-logo {
+    display: none;
+  }
+}
+
 /* Mobile styles */
 @media (min-width: 768px) {
+
   .menu-button {
     display: none;
   }

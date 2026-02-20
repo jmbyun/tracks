@@ -297,8 +297,10 @@ function ChatPage({ onLogout }) {
           <button className="menu-button" onClick={toggleSidebar}>
             <i className="fa fa-bars"></i>
           </button>
-          <h1 className="app-title">Tracks Chat</h1>
+          <img src="/icons/icon-mac-128x128.png" alt="Logo" className="app-logo" />
+          <h1 className="app-title">Tracks</h1>
         </header>
+
         <ChatArea
           messages={messages}
           sessionId={sessionId}
