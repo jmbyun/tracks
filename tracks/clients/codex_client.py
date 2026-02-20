@@ -126,6 +126,7 @@ class CodexClient:
         env['PYTHONUNBUFFERED'] = '1'
         env['TERM'] = 'dumb'  # Simple terminal to avoid escape sequences
         env['CODEX_HOME'] = os.path.join(settings.STORAGE_PATH, "agent_configs", "codex")
+        env['AGENT_HOME_PATH'] = settings.AGENT_HOME_PATH
         
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
