@@ -6,6 +6,7 @@ from .chat import router as chat_router
 from .history import router as history_router
 from .heartbeat import router as heartbeat_router
 from .telegram import router as telegram_router
+from .settings import router as settings_router
 
 
 routers = [
@@ -13,4 +14,6 @@ routers = [
     history_router,
     heartbeat_router,
     telegram_router,
+    settings_router,
 ]
+

@@ -3,11 +3,14 @@ import { useNavigate, useParams, Routes, Route } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import ChatArea from './components/ChatArea'
 import LoginPage from './components/LoginPage'
+import SettingsPage from './components/SettingsPage'
 import { getApiKey, getAuthHeaders, clearApiKey, validateApiKey } from './auth'
+
 import './App.css'
 
-function ChatPage({ onLogout }) {
+function ChatPage({ onLogout, showSettings }) {
   const navigate = useNavigate()
+
   const { sessionId: urlSessionId } = useParams()
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -297,17 +300,30 @@ function ChatPage({ onLogout }) {
           <button className="menu-button" onClick={toggleSidebar}>
             <i className="fa fa-bars"></i>
           </button>
-          <img src="/icons/icon-mac-128x128.png" alt="Logo" className="app-logo" />
-          <h1 className="app-title">Tracks</h1>
+          <div className="header-left" onClick={handleNewChat} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <img src="/icons/icon-mac-128x128.png" alt="Logo" className="app-logo" />
+            <h1 className="app-title">Tracks</h1>
+          </div>
+          <div className="header-right">
+            <button className="settings-button" onClick={() => navigate('/settings')}>
+              <i className="fa fa-cog"></i>
+            </button>
+          </div>
         </header>
 
-        <ChatArea
-          messages={messages}
-          sessionId={sessionId}
-          onSendMessage={handleSendMessage}
-          onStreamMessage={handleStreamMessage}
-          onSessionUpdate={handleSessionUpdate}
-        />
+
+        {showSettings ? (
+          <SettingsPage />
+        ) : (
+          <ChatArea
+            messages={messages}
+            sessionId={sessionId}
+            onSendMessage={handleSendMessage}
+            onStreamMessage={handleStreamMessage}
+            onSessionUpdate={handleSessionUpdate}
+          />
+        )}
+
       </div>
     </div>
   )
@@ -360,7 +376,9 @@ function App() {
     <Routes>
       <Route path="/" element={<ChatPage onLogout={handleLogout} />} />
       <Route path="/sessions/:sessionId" element={<ChatPage onLogout={handleLogout} />} />
+      <Route path="/settings" element={<ChatPage onLogout={handleLogout} showSettings={true} />} />
     </Routes>
+
   )
 }
 
