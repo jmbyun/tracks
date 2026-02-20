@@ -258,19 +258,14 @@ curl -X POST https://api.telegram.org/bot{self.bot_token}/sendMessage \\
 
             # Prepare prompt
             final_prompt = prompt_message
-            if self.session_message_counts[current_session_id] == 1:
-                # Prepend instruction to the top of prompt (for both new and rotated sessions)
-                # If rotated, prompt_message is "[Summary] ... [User Request] ...".
-                # If new, prompt_message is just text.
-                final_prompt = f"(Read CORE.md file first unless this request is simple and requires no context at all ->) {prompt_message}"
             
-            # Execute Codex
+            # Execute Agent
             # We want to stream the output to capture the full response
             # But specific to Telegram, we just collect it and send it at the end.
             # Telegram doesn't support streaming well for bots in this way easily without editing messages constantly.
             # For 1.0, wait for full response.
             
-            logger.info(f"[telegram] Sending message to Codex session {current_session_id}")
+            logger.info(f"[telegram] Sending message to Agent session {current_session_id}")
             
             user_timestamp = datetime.now()
             
@@ -291,23 +286,40 @@ curl -X POST https://api.telegram.org/bot{self.bot_token}/sendMessage \\
             
             serialized = client.serialize_output(cli_output)
             
-            agent_content = []
+            agent_chunks = []
+            stdout_chunks = []
             serialized_output = []
             metadata = None
             
+            switched = False
             for tag, line in serialized:
                 serialized_output.append({"tag": tag, "data": line})
-                client_state.check_and_update_state([{"tag": tag, "data": line}])
+                switched = client_state.check_and_update_state([{"tag": tag, "data": line}])
+                if switched:
+                    break
                 
                 if tag == "agent":
-                    agent_content.append(line)
+                    agent_chunks.append(line)
+                elif tag == "stdout":
+                    stdout_chunks.append(line)
                 elif tag == "meta":
                     try:
                         metadata = json.loads(line)
                     except:
                         pass
             
-            full_response = "".join(agent_content)
+            if switched:
+                full_response = "Usage limit exceeded. Please send message again to use another available agent.\n\n" + line
+            else:
+                agent_body = "".join(agent_chunks)
+                stdout_body = "".join(stdout_chunks)
+
+                if stdout_body in agent_body:
+                    full_response = agent_body
+                elif not agent_body.strip():
+                    full_response = stdout_body
+                else:
+                    full_response = agent_body + "\n" + stdout_body
             
             # Save assistant message
             history_service.save_message(

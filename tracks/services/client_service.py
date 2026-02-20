@@ -10,6 +10,7 @@ import sys
 
 from tracks.clients.codex_client import CodexClient
 from tracks.clients.gemini_client import GeminiClient
+from tracks.config import settings
 
 
 class ClientState:
@@ -18,8 +19,7 @@ class ClientState:
     """
     _instance: Optional['ClientState'] = None
     
-    CLIENT_CODEX = "codex"
-    CLIENT_GEMINI = "gemini"
+    CLIENT_TYPES = ["codex", "gemini"]
     
     def __new__(cls):
         if cls._instance is None:
@@ -32,7 +32,7 @@ class ClientState:
             return
             
         self._initialized = True
-        self._client_type = self.CLIENT_CODEX
+        self._client_type = settings.AGENT_USE_ORDER.split(",")[0]
         print(f"[client_service] Initialized with client: {self._client_type}")
         
     @property
@@ -40,7 +40,7 @@ class ClientState:
         return self._client_type
         
     def set_client_type(self, client_type: str):
-        if client_type not in (self.CLIENT_CODEX, self.CLIENT_GEMINI):
+        if client_type not in self.CLIENT_TYPES:
             raise ValueError(f"Invalid client type: {client_type}")
             
         if self._client_type != client_type:
@@ -49,10 +49,19 @@ class ClientState:
             
     def get_client(self, cwd: Optional[str] = None) -> Union[CodexClient, GeminiClient]:
         """Get the currently active client instance."""
-        if self._client_type == self.CLIENT_GEMINI:
+        if self._client_type == "gemini":
             return GeminiClient(cwd=cwd)
-        else:
+        elif self._client_type == "codex":
             return CodexClient(cwd=cwd)
+        else:
+            raise ValueError(f"Invalid client type: {self._client_type}")
+
+    def get_next_client_type(self):
+        """Get the next client type in the order."""
+        client_types_order = settings.AGENT_USE_ORDER.split(",")
+        current_index = client_types_order.index(self._client_type)
+        next_index = (current_index + 1) % len(client_types_order)
+        return client_types_order[next_index]
             
     def check_and_update_state(self, serialized_output: List[Dict[str, Any]]):
         """
@@ -61,27 +70,30 @@ class ClientState:
         Args:
             serialized_output: List of output events [{'tag': '...', 'data': '...'}]
         """
+        next_client_type = self.get_next_client_type()
+
         # Check if we are using codex
-        if self._client_type == self.CLIENT_CODEX:
+        if self._client_type == "codex":
             for event in serialized_output:
                 if event.get("tag") == "user":
                     data = event.get("data", "")
                     # Check for usage limit error pattern
-                    if "ERROR: You've hit your usage limit" in data:
-                        print(f"[client_service] Detected usage limit error. Switching to Gemini.")
-                        self.set_client_type(self.CLIENT_GEMINI)
-                        return
+                    if "ERROR: You've hit your usage limit" in data: 
+                        print(f"[client_service] Detected Codex usage limit exhaustion. Switching to {next_client_type.capitalize()}.")
+                        self.set_client_type(next_client_type)
+                        return True
                         
         # Check if we are using gemini
-        elif self._client_type == self.CLIENT_GEMINI:
+        elif self._client_type == "gemini":
             for event in serialized_output:
                 # Check stderr or error tags for capacity message
                 if event.get("tag") in ("stderr", "error"):
                     data = event.get("data", "")
                     if "exhausted" in data and "capacity" in data:
-                        print(f"[client_service] Detected Gemini capacity exhaustion. Switching back to Codex.")
-                        self.set_client_type(self.CLIENT_CODEX)
-                        return
+                        print(f"[client_service] Detected Gemini usage limit exhaustion. Switching to {next_client_type.capitalize()}.")
+                        self.set_client_type(next_client_type)
+                        return True
+        return False
 
 
 # Singleton instance

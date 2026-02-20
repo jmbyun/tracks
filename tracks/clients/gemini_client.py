@@ -6,6 +6,7 @@ import json
 import uuid
 from pathlib import Path
 
+from tracks.config import settings
 from tracks.vault import vault
 
 OUTPUT_TAG_STDOUT = 0
@@ -82,7 +83,7 @@ class GeminiClient:
     
     def _get_sessions_dir(self) -> Path:
         """Get the sessions directory path"""
-        return Path(os.getcwd()) / 'cache' / 'gemini' / 'sessions'
+        return Path(settings.STORAGE_PATH) / 'gemini_sessions'
     
     def _get_session_path(self, session_id: str) -> Path:
         """Get the session file path for a given session ID"""
@@ -109,6 +110,8 @@ class GeminiClient:
     def _append_to_session(self, session_id: str, event: Dict[str, Any]):
         """Append an event to the session file"""
         session_path = self._get_session_path(session_id)
+        if not session_path.exists():
+            session_path.touch()
         with open(session_path, 'a') as f:
             f.write(json.dumps(event) + '\n')
     

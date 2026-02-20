@@ -42,6 +42,18 @@ async def lifespan(app: FastAPI):
                     print(f"[app] Copied standard skill: {skill_name}")
                 except Exception as e:
                     print(f"[app] Error copying standard skill {skill_name}: {e}")
+
+    # Initialize core prompt files if missing
+    core_src = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../prompts/CORE.md"))
+    if os.path.exists(core_src):
+        for target_name in ["GEMINI.md", "AGENTS.md"]:
+            target_path = os.path.join(settings.AGENT_HOME_PATH, target_name)
+            if not os.path.exists(target_path):
+                try:
+                    shutil.copy2(core_src, target_path)
+                    print(f"[app] Initialized {target_name} from CORE.md")
+                except Exception as e:
+                    print(f"[app] Error initializing {target_name}: {e}")
     
     # Start background task to trigger initial heartbeat after ON_DEMAND_COOLDOWN_SECONDS
     initial_task = asyncio.create_task(_initial_heartbeat_trigger())

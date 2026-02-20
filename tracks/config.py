@@ -29,10 +29,11 @@ class Settings(BaseSettings):
     HEARTBEAT_COOLDOWN_SECONDS: int = 600
     ON_DEMAND_COOLDOWN_SECONDS: int = 600
 
-    # Standard integration settings
+    # Standard message integration settings
     ENABLE_TELEGRAM: bool = False
-    ENABLE_CODEX: bool = True
-    ENABLE_GEMINI: bool = False
+
+    # Standard agent integration settings
+    AGENT_USE_ORDER: str = "codex,gemini"
     
     class Config:
         env_prefix = "TRACKS_"

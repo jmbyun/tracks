@@ -12,9 +12,7 @@ from ..config import settings
 
 # Heartbeat prompt to send to LLM
 HEARTBEAT_PROMPT = (
-    "Read `CORE.md` and work on the tasks in `BACKLOG.md`. "
-    "See `HEARTBEAT.md` to where you stopped last time and you must continue from. "
-    "Always write the next step in `HEARTBEAT.md` after finishing current step."
+    "[HEARTBEAT] Work on the tasks in `JOURNAL.md`."
 )
 
 

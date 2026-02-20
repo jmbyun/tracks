@@ -1,0 +1,5 @@
+{
+    "API_KEY": "your-password",
+    "ENABLE_TELEGRAM": true,
+    "AGENT_USE_ORDER": "codex,gemini"
+}

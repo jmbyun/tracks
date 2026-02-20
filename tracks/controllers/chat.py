@@ -42,9 +42,6 @@ async def chat_stream_generator(message: str, session_id: str | None):
     
     # Execute prompt with Codex CLI
     prompt_message = message
-    if not session_id:
-        # Prepend instruction for new sessions
-        prompt_message = f"(Read CORE.md file first unless this request is simple and requires no context at all ->) {message}"
 
     cli_output = client.exec_prompt(
         prompt_message,
@@ -66,7 +63,12 @@ async def chat_stream_generator(message: str, session_id: str | None):
         serialized_output.append({"tag": tag, "data": line})
         
         # Check for usage limits
-        client_state.check_and_update_state([{"tag": tag, "data": line}])
+        switched = client_state.check_and_update_state([{"tag": tag, "data": line}])
+        if switched:
+            yield {
+                "event": "output",
+                "data": json.dumps({"tag": "error", "data": "Usage limit exceeded. Please start a new chat to use another available agent."})
+            }
         
         # Stream all output tags
         yield {

@@ -9,8 +9,7 @@ def main():
         "tracks.app:app",
         host=settings.SERVER_HOST,
         port=settings.SERVER_PORT,
-        reload=True,
-        reload_excludes=["config.json", "vault.json", "agent", "storage"]
+        reload=False,
     )
 
 if __name__ == "__main__":
