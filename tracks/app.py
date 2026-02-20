@@ -14,6 +14,7 @@ from .config import settings
 from .controllers import routers
 from .services.heartbeat_service import heartbeat_state
 from .services.heartbeat_runner import trigger_heartbeat_task
+from .services.cron_service import cron_service
 
 
 @asynccontextmanager
@@ -64,12 +65,16 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(telegram_service.start_polling())
     print(f"[app] Telegram polling service started")
     
+    # Start Cron service
+    cron_service.start()
+    
     yield
     
     # Shutdown: cleanup
     telegram_service.is_running = False
     initial_task.cancel()
-    print(f"[app] Shutting down heartbeat system and telegram service")
+    cron_service.stop()
+    print(f"[app] Shutting down heartbeat system, telegram service, and cron service")
 
 
 async def _initial_heartbeat_trigger():

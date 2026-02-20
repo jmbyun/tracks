@@ -22,3 +22,9 @@
 - When user is away, the system will send you a message starting with `[HEARTBEAT]` to make you work on the tasks in `JOURNAL.md` file. Work on the tasks in `JOURNAL.md` file until you finish all the tasks.
 - When you finish one or more task, update the `JOURNAL.md` file and send a Telegram message to user about that. Do NOT send a message if you haven't finished any task.
 - If you need the context from previous heartbeat sessions, all heartbeat sessions history are in `heartbeat/` directory. Do NOT change any history, EVER.
+
+## Feature: Cronjob
+
+- Cronjob is a feature that allows users to schedule tasks to be executed at specific times.
+- When user ask you to create/update/delete a cronjob, use `skills/cronjob/SKILL.md` file to create/update/delete a cronjob.
+- When a cronjob is triggered, the system will send you a message starting with `[CRONJOB]` to make you work on a specific task. Send a Telegram message to user about that.
