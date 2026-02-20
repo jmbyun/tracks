@@ -52,7 +52,9 @@ def run_cronjob(prompt_text: str):
     """
     cronjob_prompt = f"[CRONJOB] {prompt_text}"
     
-    for attempt in range(2):
+    max_attempts = len(settings.AGENT_USE_ORDER.split(","))
+    
+    for attempt in range(max_attempts):
         client_type = client_state.client_type
         print(f"[cronjob_worker] Starting cronjob task (attempt {attempt+1}, client: {client_type})", file=sys.stderr)
         print(f"[cronjob_worker] Prompt: {cronjob_prompt}", file=sys.stderr)
@@ -95,11 +97,11 @@ def run_cronjob(prompt_text: str):
                     agent_content.append(line)
             
             if switched:
-                if attempt == 0:
+                if attempt < max_attempts - 1:
                     print(f"[cronjob_worker] Client {client_type} limit exhausted, retrying with new client...", file=sys.stderr)
                     continue
                 else:
-                    print("[cronjob_worker] Both clients exhausted.", file=sys.stderr)
+                    print("[cronjob_worker] All clients exhausted.", file=sys.stderr)
                     send_telegram_error(prompt_text)
                     sys.exit(1)
             
@@ -122,7 +124,7 @@ def run_cronjob(prompt_text: str):
         except Exception as e:
             error_msg = f"Failed to execute cronjob: {str(e)}"
             print(f"[cronjob_worker] ERROR: {error_msg}", file=sys.stderr)
-            if attempt == 1:
+            if attempt == max_attempts - 1:
                 result = {
                     "success": False,
                     "error": error_msg

@@ -40,7 +40,7 @@ class ClientState:
         return self._client_type
         
     def set_client_type(self, client_type: str):
-        if client_type not in self.CLIENT_TYPES:
+        if client_type.split(":", 1)[0] not in self.CLIENT_TYPES:
             raise ValueError(f"Invalid client type: {client_type}")
             
         if self._client_type != client_type:
@@ -49,10 +49,14 @@ class ClientState:
             
     def get_client(self, cwd: Optional[str] = None) -> Union[CodexClient, GeminiClient]:
         """Get the currently active client instance."""
-        if self._client_type == "gemini":
+        if self._client_type.split(":", 1)[0] == "gemini":
             return GeminiClient(cwd=cwd)
-        elif self._client_type == "codex":
-            return CodexClient(cwd=cwd)
+        elif self._client_type.split(":", 1)[0] == "codex":
+            if ":" not in self._client_type:
+                profile_id = "main"
+            else:
+                profile_id = self._client_type.split(":", 1)[1]
+            return CodexClient(cwd=cwd, profile_id=profile_id)
         else:
             raise ValueError(f"Invalid client type: {self._client_type}")
 

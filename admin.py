@@ -25,14 +25,20 @@ def main():
         env = os.environ.copy()
         
         if agent_type == "codex":
-            config_dir = os.path.join(storage_path, "agent_configs", "codex")
+            profile_id = "main"
+            cmd_args = list(args.agent_args)
+            if cmd_args and not cmd_args[0].startswith("-"):
+                profile_id = cmd_args.pop(0)
+
+            config_dir = os.path.join(storage_path, "codex_homes", profile_id)
             os.makedirs(config_dir, exist_ok=True)
             os.makedirs(agent_home_path, exist_ok=True)
             
             env["CODEX_HOME"] = config_dir
-            cmd = ["codex"] + args.agent_args
+            cmd = ["codex"] + cmd_args
             
             print(f"Running codex in {agent_home_path}")
+            print(f"Profile ID: {profile_id}")
             print(f"CODEX_HOME: {env['CODEX_HOME']}")
             
         elif agent_type == "gemini":

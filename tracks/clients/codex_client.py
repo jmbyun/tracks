@@ -15,7 +15,7 @@ OUTPUT_TAG_STDERR = 1
 class CodexClient:
     """Python wrapper for Codex CLI"""
     
-    def __init__(self, binary_path: Optional[str] = None, cwd: Optional[str] = None):
+    def __init__(self, binary_path: Optional[str] = None, cwd: Optional[str] = None, profile_id: str = "main"):
         """
         Initialize Codex client
         
@@ -34,6 +34,8 @@ class CodexClient:
             self.cwd = settings.AGENT_HOME_PATH
         else:
             self.cwd = cwd
+
+        self.profile_id = profile_id
         
         # Setup config file
         self._setup_config()
@@ -125,7 +127,7 @@ class CodexClient:
         env = os.environ.copy()
         env['PYTHONUNBUFFERED'] = '1'
         env['TERM'] = 'dumb'  # Simple terminal to avoid escape sequences
-        env['CODEX_HOME'] = os.path.join(settings.STORAGE_PATH, "agent_configs", "codex")
+        env['CODEX_HOME'] = os.path.join(settings.STORAGE_PATH, "codex_homes", self.profile_id)
         env['AGENT_HOME_PATH'] = settings.AGENT_HOME_PATH
         
         # Add vault variables to environment
