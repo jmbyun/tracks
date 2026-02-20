@@ -176,10 +176,9 @@ curl -X POST https://api.telegram.org/bot{self.bot_token}/sendMessage \\
         if not text:
             return
 
-        # Access control
         if user_id not in self.allowed_user_ids:
             logger.warning(f"[telegram] Unauthorized access attempt from {user_id}")
-            await self._send_message(chat_id, f"Your user ID is {user_id}. Add this user ID to your config.")
+            await self._send_message(chat_id, f"Add your user id '{user_id}' to the TELEGRAM_USER_IDS in the Settings webpage or update the vault.json file.")
             return
         
         # Handle command
