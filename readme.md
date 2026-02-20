@@ -30,11 +30,11 @@ Before running the agents, you need to initialize them and log in to your respec
 
 1.  **Codex (OpenAI/Browser-based)**:
     ```bash
-    python admin.py agent codex login
+    python admin.py agent codex
     ```
 2.  **Gemini (Google One AI)**:
     ```bash
-    python admin.py agent gemini login
+    python admin.py agent gemini
     ```
 
 ### Using `admin.py` (Docker)
@@ -42,8 +42,8 @@ Before running the agents, you need to initialize them and log in to your respec
 If you are running Tracks via Docker, execute the authentication command within the API container:
 
 ```bash
-docker compose run --rm api python admin.py agent codex login
-docker compose run --rm api python admin.py agent gemini login
+docker compose run --rm api python admin.py agent codex
+docker compose run --rm api python admin.py agent gemini
 ```
 
 Follow the on-screen instructions in the opened browser sessions to complete the login process.
@@ -74,7 +74,7 @@ You can interact with your agents directly through Telegram.
 
 ## 🌐 Web Interface
 
-If you prefer a visual interface, Tracks comes with a premium web UI.
+Tracks comes with a simple web UI.
 
 1.  **Access**: Open your browser and navigate to [http://localhost:8541](http://localhost:8541).
 2.  **Usage**:
