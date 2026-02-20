@@ -21,7 +21,7 @@ class CodexClient:
         
         Args:
             binary_path: Path to codex binary. If None, uses 'codex' from PATH
-            cwd: Working directory for Codex CLI. If None, uses {real_cwd}/home
+            cwd: Working directory for Codex CLI. If None, uses AGENT_HOME_PATH
         """
         if binary_path is None:
             # Use 'codex' from PATH environment variable
@@ -31,7 +31,7 @@ class CodexClient:
         
         # Set default cwd
         if cwd is None:
-            self.cwd = os.path.join(os.getcwd(), 'home')
+            self.cwd = settings.AGENT_HOME_PATH
         else:
             self.cwd = cwd
         

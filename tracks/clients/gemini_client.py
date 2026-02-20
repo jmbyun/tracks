@@ -22,7 +22,7 @@ class GeminiClient:
         
         Args:
             binary_path: Path to gemini binary. If None, uses 'gemini' from PATH
-            cwd: Working directory for Gemini CLI. If None, uses {real_cwd}/home
+            cwd: Working directory for Gemini CLI. If None, uses AGENT_HOME_PATH
         """
         if binary_path is None:
             # Use 'gemini' from PATH environment variable
@@ -32,7 +32,7 @@ class GeminiClient:
         
         # Set default cwd
         if cwd is None:
-            self.cwd = os.path.join(os.getcwd(), 'home')
+            self.cwd = settings.AGENT_HOME_PATH
         else:
             self.cwd = cwd
         
