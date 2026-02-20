@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
+    container_name: tracks-api
+    restart: unless-stopped
+    ports:
+      - "8540:8540"
+    volumes:
+      # Mount entire project directory
+      - .:/app
+      # Mount home directory for history and config
+      - ./home:/app/home
+      # Mount data directory for inaccessible files
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CODEX_HOME=/app/data/codex_home
+      - GEMINI_CONFIG_DIR=/app/data/gemini_home
+    working_dir: /app
+    command: python -m uvicorn tracks.app:app --host 0.0.0.0 --port 8540 --reload
+    networks:
+      - tracks-network
+
+  web:
+    build:
+      context: ./tracks-web
+      dockerfile: ../Dockerfile.web
+    container_name: tracks-web
+    restart: unless-stopped
+    ports:
+      - "8541:8541"
+    volumes:
+      # Mount frontend directory
+      - ./tracks-web:/app
+      # Use named volume for node_modules to avoid conflicts
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://api:8540
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - api
+    networks:
+      - tracks-network
+
+networks:
+  tracks-network:
+    driver: bridge
+
+volumes:
+  node_modules:
