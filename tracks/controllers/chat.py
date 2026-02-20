@@ -67,7 +67,7 @@ async def chat_stream_generator(message: str, session_id: str | None):
         if switched:
             yield {
                 "event": "output",
-                "data": json.dumps({"tag": "error", "data": "Usage limit exceeded. Please start a new chat to use another available agent."})
+                "data": json.dumps({"tag": "error", "data": "Usage limit exceeded. Please start a new chat to use another available agent.\n\n"})
             }
         
         # Stream all output tags

@@ -40,11 +40,11 @@ def main():
             os.makedirs(config_dir, exist_ok=True)
             os.makedirs(agent_home_path, exist_ok=True)
             
-            env["GEMINI_CONFIG_DIR"] = config_dir
+            # env["GEMINI_CONFIG_DIR"] = config_dir
             cmd = ["gemini"] + args.agent_args
             
             print(f"Running gemini in {agent_home_path}")
-            print(f"GEMINI_CONFIG_DIR: {env['GEMINI_CONFIG_DIR']}")
+            # print(f"GEMINI_CONFIG_DIR: {env['GEMINI_CONFIG_DIR']}")
             
         try:
             subprocess.run(cmd, env=env, cwd=agent_home_path)

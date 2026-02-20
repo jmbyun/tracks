@@ -16,16 +16,16 @@ services:
     volumes:
       # Mount entire project directory
       - .:/app
-      # Mount home directory for history and config
-      - ./home:/app/home
       # Mount data directory for inaccessible files
-      - ./data:/app/data
+      - ./volumes/data:/data
+      # Mount gemini home directory
+      - ./volumes/gemini_home:/home/appuser/.gemini
     environment:
       - PYTHONUNBUFFERED=1
-      - CODEX_HOME=/app/data/codex_home
-      - GEMINI_CONFIG_DIR=/app/data/gemini_home
+      - AGENT_HOME_PATH=/data/agent
+      - STORAGE_PATH=/data/storage
     working_dir: /app
-    command: python -m uvicorn tracks.app:app --host 0.0.0.0 --port 8540 --reload
+    command: python -m uvicorn tracks.app:app --host 0.0.0.0 --port 8540
     networks:
       - tracks-network
 

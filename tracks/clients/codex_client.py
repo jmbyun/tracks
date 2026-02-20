@@ -6,6 +6,7 @@ import json
 import re
 
 from tracks.vault import vault
+from tracks.config import settings
 
 OUTPUT_TAG_STDOUT = 0
 OUTPUT_TAG_STDERR = 1
@@ -124,6 +125,7 @@ class CodexClient:
         env = os.environ.copy()
         env['PYTHONUNBUFFERED'] = '1'
         env['TERM'] = 'dumb'  # Simple terminal to avoid escape sequences
+        env['CODEX_HOME'] = os.path.join(settings.STORAGE_PATH, "agent_configs", "codex")
         
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
@@ -159,6 +161,10 @@ class CodexClient:
             stdout_buffer = b''
             stderr_buffer = b''
             
+            # Accumulate full logs for debug printing on failure
+            full_stdout = b''
+            full_stderr = b''
+            
             while True:
                 # Check if process has finished
                 if proc.poll() is not None:
@@ -169,12 +175,14 @@ class CodexClient:
                             if not remaining_out:
                                 break
                             stdout_buffer += remaining_out
+                            full_stdout += remaining_out
                     except (OSError, IOError):
                         pass
                     try:
                         remaining_err = proc.stderr.read()
                         if remaining_err:
                             stderr_buffer += remaining_err
+                            full_stderr += remaining_err
                     except:
                         pass
                     break
@@ -197,8 +205,10 @@ class CodexClient:
                             
                         if stream == master_fd:
                             stdout_buffer += data
+                            full_stdout += data
                         else:
                             stderr_buffer += data
+                            full_stderr += data
                     except (OSError, IOError):
                         pass
                 
@@ -222,6 +232,19 @@ class CodexClient:
                 for line in stderr_buffer.decode('utf-8', errors='replace').splitlines(keepends=True):
                     if line:
                         yield (OUTPUT_TAG_STDERR, line)
+            
+            # Check for non-zero return code and print debug info
+            return_code = proc.poll()
+            if return_code is not None and return_code != 0:
+                print("\n" + "="*50)
+                print(f"Codex exec ended with error (exit code: {return_code})")
+                print("="*50)
+                print("FULL STDOUT:")
+                print(full_stdout.decode('utf-8', errors='replace'))
+                print("-" * 30)
+                print("FULL STDERR:")
+                print(full_stderr.decode('utf-8', errors='replace'))
+                print("="*50 + "\n")
             
         finally:
             # Ensure process is cleaned up
