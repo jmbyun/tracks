@@ -306,3 +306,13 @@
 .text-preview-container code {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 }
+
+@media (max-width: 600px) {
+
+    .file-date,
+    .file-size,
+    .file-date-header,
+    .file-size-header {
+        display: none;
+    }
+}

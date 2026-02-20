@@ -186,8 +186,8 @@ function BrowserPage() {
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Last Modified</th>
-                                    <th>Size</th>
+                                    <th className="file-date-header">Last Modified</th>
+                                    <th className="file-size-header">Size</th>
                                     <th className="action-column">Actions</th>
                                 </tr>
                             </thead>
