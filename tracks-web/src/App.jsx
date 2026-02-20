@@ -13,6 +13,7 @@ function ChatPage({ onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sessionId, setSessionId] = useState(urlSessionId === 'new' ? null : urlSessionId)
   const [messages, setMessages] = useState([])
+  const [isScrolled, setIsScrolled] = useState(false)
 
   // History state
   const [conversations, setConversations] = useState([])
@@ -37,6 +38,13 @@ function ChatPage({ onLogout }) {
     loadHistory(0)
     loadHeartbeatHistory(0)
     loadTelegramHistory(0)
+
+    const handleWindowScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+
+    window.addEventListener('scroll', handleWindowScroll)
+    return () => window.removeEventListener('scroll', handleWindowScroll)
   }, [])
 
   // Track if we should skip the next URL-based load (e.g., during active streaming)
@@ -285,7 +293,7 @@ function ChatPage({ onLogout }) {
         onLogout={onLogout}
       />
       <div className="main-content">
-        <header className="app-header">
+        <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
           <button className="menu-button" onClick={toggleSidebar}>
             <i className="fa fa-bars"></i>
           </button>
