@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { parseDiff, Diff, Hunk } from 'react-diff-view'
+import 'react-diff-view/style/index.css'
 import './Message.css'
 
 function ThinkingBlock({ content }) {
@@ -53,53 +55,75 @@ function DiffBlock({ content, className, ...props }) {
     const [isExpanded, setIsExpanded] = useState(false)
 
     // Parse diff content
-    const lines = content.split('\n')
-    let filename = 'Unknown file'
-    let additions = 0
-    let deletions = 0
-
-    // Try to extract filename
-    const diffLine = lines.find(l => l.startsWith('diff --git'))
-    if (diffLine) {
-        // diff --git a/path/to/file b/path/to/file
-        // We want the part after b/
-        const parts = diffLine.split(' b/')
-        if (parts.length >= 2) {
-            filename = parts[1].trim()
-        }
-    } else {
-        const plusLine = lines.find(l => l.startsWith('+++ b/'))
-        if (plusLine) filename = plusLine.substring(6).trim()
+    let files = []
+    try {
+        files = parseDiff(content)
+    } catch (e) {
+        console.error('Failed to parse diff:', e)
     }
 
-    // Count stats
-    lines.forEach(line => {
-        if (line.startsWith('+') && !line.startsWith('+++')) additions++
-        if (line.startsWith('-') && !line.startsWith('---')) deletions++
-    })
+    // Fallback if parsing fails or no files found
+    if (!files || files.length === 0) {
+        const lines = content.split('\n')
+        let filename = 'Unknown file'
+        const diffLine = lines.find(l => l.startsWith('diff --git'))
+        if (diffLine) {
+            const parts = diffLine.split(' b/')
+            if (parts.length >= 2) filename = parts[1].trim()
+        }
+
+        return (
+            <div className={`block-container diff ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                <div className="block-header" onClick={() => setIsExpanded(!isExpanded)}>
+                    <div className="diff-info">
+                        <i className="fa fa-file-code-o"></i>
+                        <span className="filename">{filename}</span>
+                    </div>
+                </div>
+                {isExpanded && (
+                    <div className="block-content code">
+                        <pre><code className={className} {...props}>{content}</code></pre>
+                    </div>
+                )}
+            </div>
+        )
+    }
 
     return (
-        <div className={`block-container diff ${isExpanded ? 'expanded' : 'collapsed'}`}>
-            <div className="block-header" onClick={() => setIsExpanded(!isExpanded)}>
-                <div className="diff-info">
-                    <i className="fa fa-file-code-o"></i>
-                    <span className="filename">{filename}</span>
-                </div>
-                <div className="diff-stats">
-                    {additions > 0 && <span className="stat-added">+{additions}</span>}
-                    {deletions > 0 && <span className="stat-removed">-{deletions}</span>}
-                    <span className="toggle-icon">{isExpanded ? '▼' : '▶'}</span>
-                </div>
-            </div>
-            {isExpanded && (
-                <div className="block-content code">
-                    <pre>
-                        <code className={className} {...props}>
-                            {content}
-                        </code>
-                    </pre>
-                </div>
-            )}
+        <div className="diff-container">
+            {files.map((file, i) => {
+                const { oldPath, newPath, type, hunks } = file
+                const filename = newPath === '/dev/null' ? oldPath : newPath
+                const additions = hunks.reduce((sum, h) => sum + h.changes.filter(c => c.type === 'add').length, 0)
+                const deletions = hunks.reduce((sum, h) => sum + h.changes.filter(c => c.type === 'insert').length, 0) // inserts are additions, deletes are deletions in some libraries
+
+                // react-diff-view change types: 'normal', 'insert', 'delete'
+                const adds = hunks.reduce((sum, h) => sum + h.changes.filter(c => c.type === 'insert').length, 0)
+                const dels = hunks.reduce((sum, h) => sum + h.changes.filter(c => c.type === 'delete').length, 0)
+
+                return (
+                    <div key={i} className={`block-container diff ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                        <div className="block-header" onClick={() => setIsExpanded(!isExpanded)}>
+                            <div className="diff-info">
+                                <i className="fa fa-file-code-o"></i>
+                                <span className="filename">{filename}</span>
+                            </div>
+                            <div className="diff-stats">
+                                {adds > 0 && <span className="stat-added">+{adds}</span>}
+                                {dels > 0 && <span className="stat-removed">-{dels}</span>}
+                                <span className="toggle-icon">{isExpanded ? '▼' : '▶'}</span>
+                            </div>
+                        </div>
+                        {isExpanded && (
+                            <div className="block-content diff-viewer-content">
+                                <Diff viewType="unified" diffType={type} hunks={hunks}>
+                                    {hunks => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
+                                </Diff>
+                            </div>
+                        )}
+                    </div>
+                )
+            })}
         </div>
     )
 }
