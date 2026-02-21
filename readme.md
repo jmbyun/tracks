@@ -61,6 +61,20 @@ docker compose run --rm api python admin.py agent gemini
 
 Follow the on-screen instructions in the opened browser sessions to complete the login process.
 
+### 🛡️ API Key Security & Configuration
+
+To ensure your Tracks instance is secure, the API uses an `API_KEY` for authentication.
+
+- **Automatic Security**: On its first run, if Tracks detects the default API key (`tracks!`), it will automatically generate a random 12-character alphanumeric key and save it to your `config.json`.
+- **Manual Configuration**: You can manually update your API key at any time using the `setup.py` utility:
+  ```bash
+  python setup.py apikey {your_new_api_key}
+  ```
+  If you're using Docker:
+  ```bash
+  docker compose run --rm api python setup.py apikey {your_new_api_key}
+  ```
+
 ### 🔄 Configuring Agent Use Order (Client Rotation)
 
 Tracks can automatically rotate through multiple LLM clients (or profiles) if one hits its usage limit (e.g., standard ChatGPT message cap).
