@@ -32,6 +32,10 @@ Before running the agents, you need to initialize them and log in to your respec
     ```bash
     python admin.py agent codex
     ```
+    *Note: You can initialize multiple Codex profiles by passing a profile ID. This is useful for rotating accounts if you hit usage limits.*
+    ```bash
+    python admin.py agent codex:my_second_profile
+    ```
 2.  **Gemini (Google One AI)**:
     ```bash
     python admin.py agent gemini
@@ -43,10 +47,25 @@ If you are running Tracks via Docker, execute the authentication command within 
 
 ```bash
 docker compose run --rm api python admin.py agent codex
+# Or for a specific profile:
+# docker compose run --rm api python admin.py agent codex:my_second_profile
 docker compose run --rm api python admin.py agent gemini
 ```
 
 Follow the on-screen instructions in the opened browser sessions to complete the login process.
+
+### 🔄 Configuring Agent Use Order (Client Rotation)
+
+Tracks can automatically rotate through multiple LLM clients (or profiles) if one hits its usage limit (e.g., standard ChatGPT message cap).
+You can configure the order in which clients are attempted.
+
+1. **Via Web Interface**: Go to `Settings` -> `Agent Use Order` and enter a comma-separated list: `codex,codex:my_second_profile,gemini`
+2. **Via `config.json`**:
+    ```json
+    {
+        "AGENT_USE_ORDER": "codex,codex:my_second_profile,gemini"
+    }
+    ```
 
 ---
 
