@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..config import settings
+from ..services.client_service import client_state
 
 router = APIRouter(prefix="/api/settings", tags=["settings"])
 
@@ -23,6 +24,9 @@ class ConfigUpdate(BaseModel):
 class VaultItem(BaseModel):
     key: str
     value: str
+
+class ActiveClientUpdate(BaseModel):
+    client_type: str
 
 def read_json_file(path: str) -> Dict[str, Any]:
     if not os.path.exists(path):
@@ -62,6 +66,23 @@ async def update_config(update: ConfigUpdate):
     config.update(update_data)
     write_json_file(CONFIG_PATH, config)
     return {"status": "success", "config": config}
+
+@router.get("/active-client")
+async def get_active_client():
+    from ..config import settings
+    available = [c.strip() for c in settings.AGENT_USE_ORDER.split(",") if c.strip()]
+    return {
+        "active_client": client_state.client_type,
+        "available_clients": available
+    }
+
+@router.post("/active-client")
+async def set_active_client(update: ActiveClientUpdate):
+    try:
+        client_state.set_client_type(update.client_type)
+        return {"status": "success", "active_client": client_state.client_type}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/vault")
 async def get_vault():

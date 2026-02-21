@@ -19,6 +19,8 @@ function SettingsPage() {
     const [config, setConfig] = useState({})
     const [vault, setVault] = useState([])
     const [defaults, setDefaults] = useState({})
+    const [activeClient, setActiveClient] = useState('')
+    const [availableClients, setAvailableClients] = useState([])
     const [isLoading, setIsLoading] = useState(true)
 
     const [isSaving, setIsSaving] = useState(false)
@@ -61,7 +63,18 @@ function SettingsPage() {
                 } catch (e) { console.error('Defaults fetch failed:', e) }
             }
 
-            await Promise.all([fetchConfig(), fetchVault(), fetchDefaults()])
+            const fetchActiveClient = async () => {
+                try {
+                    const res = await fetch('/api/settings/active-client', { headers: getAuthHeaders() })
+                    if (res.ok) {
+                        const data = await res.json()
+                        setActiveClient(data.active_client)
+                        setAvailableClients(data.available_clients)
+                    }
+                } catch (e) { console.error('Active client fetch failed:', e) }
+            }
+
+            await Promise.all([fetchConfig(), fetchVault(), fetchDefaults(), fetchActiveClient()])
         } catch (error) {
             console.error('Error fetching settings:', error)
             showStatus('Failed to load settings', 'error')
@@ -79,6 +92,30 @@ function SettingsPage() {
     const handleConfigChange = (key, value) => {
         setConfig(prev => ({ ...prev, [key]: value }))
     }
+
+    const handleActiveClientChange = async (e) => {
+        const newClient = e.target.value
+        setActiveClient(newClient)
+        setIsSaving(true)
+        try {
+            const res = await fetch('/api/settings/active-client', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                body: JSON.stringify({ client_type: newClient })
+            })
+            if (res.ok) {
+                showStatus('Active client updated', 'success')
+            } else {
+                showStatus('Failed to update active client', 'error')
+            }
+        } catch (error) {
+            showStatus('Error updating active client', 'error')
+        } finally {
+            setIsSaving(false)
+        }
+    }
+
+
 
     const saveConfig = async () => {
         setIsSaving(true)
@@ -193,6 +230,28 @@ function SettingsPage() {
                         </div>
                     )}
                 </header>
+
+                <section className="settings-section active-client-section">
+                    <h2>Active LLM Client</h2>
+                    <div className="config-grid">
+                        <div className="config-item">
+                            <div className="config-label-group">
+                                <label>Currently Selected Client</label>
+                                <span className="default-hint">Select the active LLM agent for execution tasks</span>
+                            </div>
+                            <select
+                                value={activeClient}
+                                onChange={handleActiveClientChange}
+                                className="active-client-select"
+                                disabled={isSaving}
+                            >
+                                {availableClients.map(client => (
+                                    <option key={client} value={client}>{client}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </section>
 
                 <section className="settings-section">
                     <h2>Application Configuration</h2>
