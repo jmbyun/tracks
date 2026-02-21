@@ -29,6 +29,8 @@
     width: 100%;
     color: var(--text-primary);
     line-height: 1.6;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .message.user .message-content {

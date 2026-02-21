@@ -89,6 +89,7 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    table-layout: fixed;
 }
 
 .file-table th {
@@ -140,6 +141,8 @@
 
 .file-name {
     font-weight: 500;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
 .file-date,
@@ -175,6 +178,7 @@
     padding: 8px;
     border-radius: 4px;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
 
 .download-icon-btn:hover {
