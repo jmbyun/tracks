@@ -6,6 +6,7 @@ function ChatInput({ sessionId, onSendMessage, onStreamMessage, onSessionUpdate,
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const textareaRef = useRef(null)
+    const abortControllerRef = useRef(null)
 
     const adjustTextareaHeight = () => {
         const textarea = textareaRef.current
@@ -18,6 +19,13 @@ function ChatInput({ sessionId, onSendMessage, onStreamMessage, onSessionUpdate,
     useEffect(() => {
         adjustTextareaHeight()
     }, [input])
+
+    const handleStop = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+            abortControllerRef.current = null
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -32,6 +40,8 @@ function ChatInput({ sessionId, onSendMessage, onStreamMessage, onSessionUpdate,
         onSendMessage(message)
 
         try {
+            abortControllerRef.current = new AbortController()
+
             // Make API request with SSE
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -42,7 +52,8 @@ function ChatInput({ sessionId, onSendMessage, onStreamMessage, onSessionUpdate,
                 body: JSON.stringify({
                     message,
                     session_id: sessionId
-                })
+                }),
+                signal: abortControllerRef.current.signal
             })
 
             const reader = response.body.getReader()
@@ -94,8 +105,14 @@ function ChatInput({ sessionId, onSendMessage, onStreamMessage, onSessionUpdate,
                 }
             }
         } catch (error) {
-            console.error('Error sending message:', error)
+            if (error.name === 'AbortError') {
+                console.log('Stream aborted by user')
+                onStreamMessage('\n\n[Stopped by user]', 'agent')
+            } else {
+                console.error('Error sending message:', error)
+            }
         } finally {
+            abortControllerRef.current = null
             setIsLoading(false)
             if (onLoadingChange) onLoadingChange(false)
         }
@@ -121,13 +138,25 @@ function ChatInput({ sessionId, onSendMessage, onStreamMessage, onSessionUpdate,
                     disabled={isLoading}
                     rows={1}
                 />
-                <button
-                    type="submit"
-                    className="send-button"
-                    disabled={!input.trim() || isLoading}
-                >
-                    <i className="fa fa-arrow-up"></i>
-                </button>
+                {isLoading ? (
+                    <button
+                        type="button"
+                        className="send-button stop-button"
+                        onClick={handleStop}
+                        title="Stop Generation"
+                    >
+                        <i className="fa fa-square"></i>
+                    </button>
+                ) : (
+                    <button
+                        type="submit"
+                        className="send-button"
+                        disabled={!input.trim()}
+                        title="Send Message"
+                    >
+                        <i className="fa fa-arrow-up"></i>
+                    </button>
+                )}
             </form>
         </div>
     )
