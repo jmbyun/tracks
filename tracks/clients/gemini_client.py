@@ -4,6 +4,7 @@ import subprocess
 import os
 import json
 import uuid
+import shutil
 from pathlib import Path
 
 from tracks.config import settings
@@ -16,7 +17,7 @@ OUTPUT_TAG_STDERR = 1
 class GeminiClient:
     """Python wrapper for Gemini CLI - Compatible with CodexClient interface"""
     
-    def __init__(self, binary_path: Optional[str] = None, cwd: Optional[str] = None):
+    def __init__(self, binary_path: Optional[str] = None, cwd: Optional[str] = None, profile_id: str):
         """
         Initialize Gemini client
         
@@ -35,6 +36,8 @@ class GeminiClient:
             self.cwd = settings.AGENT_HOME_PATH
         else:
             self.cwd = cwd
+
+        self.profile_id = profile_id
         
         # Setup config file (for compatibility, may be customized later)
         self._setup_config()
@@ -175,6 +178,21 @@ class GeminiClient:
         # Yield synthetic init event with our session_id
         init_event = json.dumps({'type': 'init', 'session_id': session_id})
         yield (OUTPUT_TAG_STDOUT, init_event + '\n')
+
+        # Symlink config dir for Gemini - GEMINI_CONFIG_DIR IS NOT RESPECTED
+        symlink_failed = False
+        actual_gemini_home_path = os.path.join(settings.STORAGE_PATH, "gemini_homes", self.profile_id)
+        os.makedirs(actual_gemini_home_path, exist_ok=True)
+        gemini_config_path = str(Path.home() / ".gemini")
+        if os.path.exists(gemini_config_path):
+            os.remove(gemini_config_path)
+        try:
+            os.symlink(actual_gemini_home_path, gemini_config_path)
+        except Exception as e:
+            print(f'[gemini] Warning: Failed to symlink gemini config dir: {e}')
+            symlink_failed = True
+            shutil.copytree(actual_gemini_home_path, gemini_config_path)
+            # TODO: Copy back after Gemini exits
         
         # Build command - use stdin for history
         cmd = [self.binary_path, '--prompt', prompt, '--output-format', 'stream-json']

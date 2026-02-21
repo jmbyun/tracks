@@ -18,8 +18,6 @@ services:
       - .:/app
       # Mount data directory for inaccessible files
       - ./volumes/data:/data
-      # Mount gemini home directory
-      - ./volumes/gemini_home:/home/appuser/.gemini
     environment:
       - PYTHONUNBUFFERED=1
       - TRACKS_AGENT_HOME_PATH=/data/agent

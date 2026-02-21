@@ -49,13 +49,15 @@ class ClientState:
             
     def get_client(self, cwd: Optional[str] = None) -> Union[CodexClient, GeminiClient]:
         """Get the currently active client instance."""
-        if self._client_type.split(":", 1)[0] == "gemini":
-            return GeminiClient(cwd=cwd)
-        elif self._client_type.split(":", 1)[0] == "codex":
-            if ":" not in self._client_type:
-                profile_id = "main"
-            else:
-                profile_id = self._client_type.split(":", 1)[1]
+        if ":" not in self._client_type:
+            profile_id = "main"
+        else:
+            profile_id = self._client_type.split(":", 1)[1]
+        which_client = self._client_type.split(":", 1)[0]
+        
+        if which_client == "gemini":
+            return GeminiClient(cwd=cwd, profile_id=profile_id)
+        elif which_client == "codex":
             return CodexClient(cwd=cwd, profile_id=profile_id)
         else:
             raise ValueError(f"Invalid client type: {self._client_type}")
