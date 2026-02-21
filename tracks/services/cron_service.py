@@ -7,7 +7,8 @@ from datetime import datetime, timezone, timedelta
 from tracks.config import settings
 import logging
 
-KST = timezone(timedelta(hours=9))
+def get_timezone():
+    return timezone(timedelta(hours=settings.UTC_OFFSET))
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,8 @@ class CronService:
 
     async def _run_loop(self):
         while self._running:
-            now_dt = datetime.now(KST)
+            tz = get_timezone()
+            now_dt = datetime.now(tz)
             # Wait until the start of the next minute
             # seconds_to_next_minute = 60 - now_dt.second
             seconds_to_next_minute = 60 - now_dt.second + 1
@@ -39,7 +41,7 @@ class CronService:
             if not self._running:
                 break
                 
-            current_time = datetime.now(KST)
+            current_time = datetime.now(tz)
             try:
                 await self._check_and_run_jobs(current_time)
             except Exception as e:

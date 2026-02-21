@@ -20,6 +20,7 @@ function ChatPage({ onLogout, showSettings, showBrowser }) {
   const [sessionId, setSessionId] = useState(urlSessionId === 'new' ? null : urlSessionId)
   const [messages, setMessages] = useState([])
   const [isScrolled, setIsScrolled] = useState(false)
+  const [utcOffset, setUtcOffset] = useState(null)
 
   // History state
   const [conversations, setConversations] = useState([])
@@ -44,6 +45,7 @@ function ChatPage({ onLogout, showSettings, showBrowser }) {
     loadHistory(0)
     loadHeartbeatHistory(0)
     loadTelegramHistory(0)
+    fetchConfig()
 
     const handleWindowScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -52,6 +54,22 @@ function ChatPage({ onLogout, showSettings, showBrowser }) {
     window.addEventListener('scroll', handleWindowScroll)
     return () => window.removeEventListener('scroll', handleWindowScroll)
   }, [])
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch('/api/settings/config', {
+        headers: { ...getAuthHeaders() }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data.UTC_OFFSET !== undefined) {
+          setUtcOffset(data.UTC_OFFSET)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching config:', error)
+    }
+  }
 
   // Track if we should skip the next URL-based load (e.g., during active streaming)
   const skipNextLoadRef = useRef(false)
@@ -331,6 +349,7 @@ function ChatPage({ onLogout, showSettings, showBrowser }) {
             onSendMessage={handleSendMessage}
             onStreamMessage={handleStreamMessage}
             onSessionUpdate={handleSessionUpdate}
+            utcOffset={utcOffset}
           />
         )}
 

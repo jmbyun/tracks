@@ -3,7 +3,7 @@ import Message from './Message'
 import ChatInput from './ChatInput'
 import './ChatArea.css'
 
-function ChatArea({ messages, sessionId, onSendMessage, onStreamMessage, onSessionUpdate }) {
+function ChatArea({ messages, sessionId, onSendMessage, onStreamMessage, onSessionUpdate, utcOffset }) {
     const messagesEndRef = useRef(null)
     const [isResponseLoading, setIsResponseLoading] = useState(false)
 
@@ -31,6 +31,7 @@ function ChatArea({ messages, sessionId, onSendMessage, onStreamMessage, onSessi
                                 content={message.content}
                                 serialized_output={message.serialized_output}
                                 timestamp={message.timestamp}
+                                utcOffset={utcOffset}
                             />
                         ))}
                         {isResponseLoading && (

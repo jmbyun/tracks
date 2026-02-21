@@ -162,11 +162,11 @@ def list_conversations(
                         else:
                             timestamp_iso = timestamp_str
                         
-                        # Convert to KST (UTC+9)
+                        # Convert to target timezone
                         try:
                             dt = datetime.fromisoformat(timestamp_iso)
-                            dt_kst = dt + timedelta(hours=9)
-                            timestamp_iso = dt_kst.isoformat()
+                            dt_local = dt + timedelta(hours=settings.UTC_OFFSET)
+                            timestamp_iso = dt_local.isoformat()
                         except ValueError:
                             pass
                         
@@ -235,11 +235,11 @@ def get_conversation(session_id: str) -> Optional[HistoryDetailResponse]:
                     else:
                         timestamp_iso = timestamp_str
                     
-                    # Convert to KST (UTC+9)
+                    # Convert to target timezone
                     try:
                         dt = datetime.fromisoformat(timestamp_iso)
-                        dt_kst = dt + timedelta(hours=9)
-                        timestamp_iso = dt_kst.isoformat()
+                        dt_local = dt + timedelta(hours=settings.UTC_OFFSET)
+                        timestamp_iso = dt_local.isoformat()
                     except ValueError:
                         pass
                     

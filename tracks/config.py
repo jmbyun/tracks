@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     # Standard agent integration settings
     AGENT_USE_ORDER: str = "codex,gemini"
     
+    # Timezone settings
+    UTC_OFFSET: int = 9
+    
     class Config:
         env_prefix = "TRACKS_"
         case_sensitive = True

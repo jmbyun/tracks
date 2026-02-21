@@ -20,6 +20,7 @@ class ConfigUpdate(BaseModel):
     ON_DEMAND_COOLDOWN_SECONDS: int = None
     ENABLE_TELEGRAM: bool = None
     AGENT_USE_ORDER: str = None
+    UTC_OFFSET: int = None
 
 class VaultItem(BaseModel):
     key: str

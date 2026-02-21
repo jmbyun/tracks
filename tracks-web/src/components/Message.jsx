@@ -196,13 +196,19 @@ function ExecutionBlock({ command, output, duration }) {
     )
 }
 
-function formatKST(isoString) {
+function formatLocalTime(isoString, utcOffset = 9) {
     if (!isoString) return ''
     const date = new Date(isoString)
 
-    // Format to KST (UTC+9)
+    // Fallback to 9 if utcOffset is null/undefined
+    const offset = (utcOffset === null || utcOffset === undefined) ? 9 : utcOffset
+
+    // Format to target timezone using Etc/GMT syntax
+    // Note: Etc/GMT signs are reversed (Etc/GMT-9 is UTC+9)
+    const tzName = `Etc/GMT${offset >= 0 ? '-' : '+'}${Math.abs(offset)}`
+
     const options = {
-        timeZone: 'Asia/Seoul',
+        timeZone: tzName,
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -212,14 +218,24 @@ function formatKST(isoString) {
         hour12: false
     }
 
-    // ko-KR format: 2024. 02. 02. 13:54:23
-    // en-GB format: 02/02/2024, 13:54:23
-    // sv-SE format: 2024-02-02 13:54:23
-
-    return new Intl.DateTimeFormat('sv-SE', options).format(date)
+    try {
+        return new Intl.DateTimeFormat('sv-SE', options).format(date)
+    } catch (e) {
+        console.error('Timezone format error:', e)
+        // Fallback to system local if Etc/GMT fails
+        return new Intl.DateTimeFormat('sv-SE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).format(date)
+    }
 }
 
-function Message({ role, content, serialized_output, timestamp }) {
+function Message({ role, content, serialized_output, timestamp, utcOffset }) {
     const components = {
         // Custom rendering for code blocks
         code({ node, inline, className, children, ...props }) {
@@ -365,7 +381,7 @@ function Message({ role, content, serialized_output, timestamp }) {
                 </div>
                 {role === 'user' && timestamp && (
                     <div className="message-timestamp">
-                        {formatKST(timestamp)}
+                        {formatLocalTime(timestamp, utcOffset)}
                     </div>
                 )}
             </div>

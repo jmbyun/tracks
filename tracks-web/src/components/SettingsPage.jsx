@@ -6,7 +6,8 @@ const CONFIG_KEYS = [
     { key: 'HEARTBEAT_COOLDOWN_SECONDS', label: 'Heartbeat Cooldown (s)', type: 'number' },
     { key: 'ON_DEMAND_COOLDOWN_SECONDS', label: 'On-Demand Cooldown (s)', type: 'number' },
     { key: 'ENABLE_TELEGRAM', label: 'Enable Telegram', type: 'boolean' },
-    { key: 'AGENT_USE_ORDER', label: 'Agent Use Order', type: 'text', placeholder: 'e.g., codex,gemini' }
+    { key: 'AGENT_USE_ORDER', label: 'Agent Use Order', type: 'text', placeholder: 'e.g., codex,gemini' },
+    { key: 'UTC_OFFSET', label: 'UTC Offset (hours)', type: 'number' }
 ]
 
 const VAULT_KEY_OPTIONS = [
