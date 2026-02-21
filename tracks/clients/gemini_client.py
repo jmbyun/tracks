@@ -17,7 +17,7 @@ OUTPUT_TAG_STDERR = 1
 class GeminiClient:
     """Python wrapper for Gemini CLI - Compatible with CodexClient interface"""
     
-    def __init__(self, binary_path: Optional[str] = None, cwd: Optional[str] = None, profile_id: str):
+    def __init__(self, binary_path: Optional[str] = None, cwd: Optional[str] = None, profile_id: str = "main"):
         """
         Initialize Gemini client
         
@@ -185,7 +185,7 @@ class GeminiClient:
         os.makedirs(actual_gemini_home_path, exist_ok=True)
         gemini_config_path = str(Path.home() / ".gemini")
         if os.path.exists(gemini_config_path):
-            os.remove(gemini_config_path)
+            shutil.rmtree(gemini_config_path)
         try:
             os.symlink(actual_gemini_home_path, gemini_config_path)
         except Exception as e:

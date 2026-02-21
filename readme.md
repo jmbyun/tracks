@@ -40,6 +40,10 @@ Before running the agents, you need to initialize them and log in to your respec
     ```bash
     python admin.py agent gemini
     ```
+    *Note: Similarly, you can initialize multiple Gemini profiles.*
+    ```bash
+    python admin.py agent gemini:my_second_profile
+    ```
 
 ### Using `admin.py` (Docker)
 
@@ -49,7 +53,10 @@ If you are running Tracks via Docker, execute the authentication command within 
 docker compose run --rm api python admin.py agent codex
 # Or for a specific profile:
 # docker compose run --rm api python admin.py agent codex:my_second_profile
+
 docker compose run --rm api python admin.py agent gemini
+# Or for a specific Gemini profile:
+# docker compose run --rm api python admin.py agent gemini:my_second_profile
 ```
 
 Follow the on-screen instructions in the opened browser sessions to complete the login process.
@@ -59,11 +66,11 @@ Follow the on-screen instructions in the opened browser sessions to complete the
 Tracks can automatically rotate through multiple LLM clients (or profiles) if one hits its usage limit (e.g., standard ChatGPT message cap).
 You can configure the order in which clients are attempted.
 
-1. **Via Web Interface**: Go to `Settings` -> `Agent Use Order` and enter a comma-separated list: `codex,codex:my_second_profile,gemini`
+1. **Via Web Interface**: Go to `Settings` -> `Agent Use Order` and enter a comma-separated list: `codex,codex:my_second_profile,gemini,gemini:my_second_profile`
 2. **Via `config.json`**:
     ```json
     {
-        "AGENT_USE_ORDER": "codex,codex:my_second_profile,gemini"
+        "AGENT_USE_ORDER": "codex,codex:my_second_profile,gemini,gemini:my_second_profile"
     }
     ```
 

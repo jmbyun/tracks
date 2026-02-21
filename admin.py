@@ -2,6 +2,8 @@ import argparse
 import os
 import subprocess
 import sys
+import shutil
+from pathlib import Path
 
 # Ensure the tracks module can be imported
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -42,7 +44,18 @@ def main():
             print(f"CODEX_HOME: {env['CODEX_HOME']}")
             
         elif agent_type == "gemini":
-            config_dir = os.path.join(storage_path, "agent_configs", "gemini")
+            config_dir = os.path.join(storage_path, "gemini_homes", profile_id)
+            gemini_home_dir = str(Path.home() / ".gemini")
+            if os.path.exists(gemini_home_dir):
+                shutil.rmtree(gemini_home_dir)
+            symlink_failed = False
+            try:
+                os.symlink(config_dir, gemini_home_dir)
+            except Exception as e:
+                print(f"Warning: Could not create symlink: {e}")
+                symlink_failed = True
+                shutil.copytree(config_dir, gemini_home_dir)
+
             os.makedirs(config_dir, exist_ok=True)
             os.makedirs(agent_home_path, exist_ok=True)
             
@@ -50,7 +63,7 @@ def main():
             cmd = ["gemini"] + args.agent_args
             
             print(f"Running gemini in {agent_home_path}")
-            # print(f"GEMINI_CONFIG_DIR: {env['GEMINI_CONFIG_DIR']}")
+            print(f"GEMINI_CONFIG_DIR_SOURCE: {config_dir}")
             
         try:
             subprocess.run(cmd, env=env, cwd=agent_home_path)
@@ -61,6 +74,10 @@ def main():
             pass
         except Exception as e:
             print(f"Error running {agent_type}: {e}")
+        finally:
+            if symlink_failed:
+                shutil.copytree(gemini_home_dir, config_dir)
+                shutil.rmtree(gemini_home_dir)
 
 if __name__ == "__main__":
     main()
