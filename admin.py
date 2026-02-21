@@ -44,6 +44,11 @@ def main():
             print(f"CODEX_HOME: {env['CODEX_HOME']}")
             
         elif agent_type == "gemini":
+            profile_id = "main"
+            cmd_args = list(args.agent_args)
+            if cmd_args and not cmd_args[0].startswith("-"):
+                profile_id = cmd_args.pop(0)
+                
             config_dir = os.path.join(storage_path, "gemini_homes", profile_id)
             gemini_home_dir = str(Path.home() / ".gemini")
             if os.path.exists(gemini_home_dir):
