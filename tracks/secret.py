@@ -7,3 +7,5 @@ class SecretStorage:
 
     def get(self, key):
         return self.secrets.get(key)
+
+secret = SecretStorage()
