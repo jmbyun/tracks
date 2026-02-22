@@ -113,6 +113,26 @@ function ConnectionsPage() {
         }
     }
 
+    const handleConnectYouTube = async () => {
+        try {
+            const res = await fetch('/api/connection/youtube/auth-url', {
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                const data = await res.json()
+                if (data.auth_url) {
+                    window.location.href = data.auth_url
+                }
+            } else {
+                const err = await res.json()
+                showStatus(err.detail || 'Failed to initialize YouTube login', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('Failed to connect to YouTube', 'error')
+        }
+    }
+
     const handleRemoveGoogle = async () => {
         if (!confirm('Are you sure you want to remove the Google connection?')) return
         try {
@@ -189,10 +209,30 @@ function ConnectionsPage() {
         }
     }
 
+    const handleRemoveYouTube = async () => {
+        if (!confirm('Are you sure you want to remove the YouTube connection?')) return
+        try {
+            const res = await fetch('/api/connection/youtube/remove', {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                showStatus('YouTube connection removed', 'success')
+                fetchVault()
+            } else {
+                showStatus('Failed to remove YouTube connection', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('An error occurred during removal', 'error')
+        }
+    }
+
     const isGoogleConnected = vault.some(v => v.key === 'GOOGLE_OAUTH_REFRESH_TOKEN')
     const isInstagramConnected = vault.some(v => v.key === 'INSTAGRAM_OAUTH_TOKEN')
     const isTwitterConnected = vault.some(v => v.key === 'TWITTER_OAUTH_TOKEN' || v.key === 'TWITTER_REFRESH_TOKEN')
     const isSmartThingsConnected = vault.some(v => v.key === 'SMARTTHINGS_OAUTH_TOKEN')
+    const isYouTubeConnected = vault.some(v => v.key === 'YOUTUBE_OAUTH_TOKEN' || v.key === 'YOUTUBE_REFRESH_TOKEN')
 
     if (isLoading) {
         return <div className="connections-loading">Loading connections...</div>
@@ -236,6 +276,31 @@ function ConnectionsPage() {
                                     </button>
                                 ) : (
                                     <button className="edit-button" style={{ backgroundColor: '#4ea8de', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectGoogle} title="Connect">
+                                        <i className="fa fa-link"></i> Connect
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* YouTube */}
+                        <div className="vault-item">
+                            <div className="vault-info">
+                                <span className="vault-key" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.1rem' }}>
+                                    <i className="fa fa-youtube-play" style={{ color: '#FF0000', fontSize: '1.3rem' }}></i> YouTube
+                                </span>
+                                <span className="vault-value">
+                                    <span className={`status-badge ${isYouTubeConnected ? 'on' : 'off'}`}>
+                                        {isYouTubeConnected ? 'Connected' : 'Not Connected'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className="vault-actions">
+                                {isYouTubeConnected ? (
+                                    <button className="delete-button" onClick={handleRemoveYouTube} title="Remove Connection">
+                                        <i className="fa fa-unlink"></i> Disconnect
+                                    </button>
+                                ) : (
+                                    <button className="edit-button" style={{ backgroundColor: '#FF0000', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectYouTube} title="Connect">
                                         <i className="fa fa-link"></i> Connect
                                     </button>
                                 )}

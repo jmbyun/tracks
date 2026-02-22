@@ -1,0 +1,4 @@
+interface:
+  display_name: "YouTube Integration"
+  short_description: "Manage channel stats, videos, searches, and comments."
+  default_prompt: "Summarize the recent comments on my latest video."

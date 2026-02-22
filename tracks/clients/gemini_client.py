@@ -243,6 +243,12 @@ class GeminiClient:
         if secret.get("SMARTTHINGS_CLIENT_SECRET"):
             env["SMARTTHINGS_CLIENT_SECRET"] = secret.get("SMARTTHINGS_CLIENT_SECRET")
 
+        # Add YouTube Auth Secrets to environment
+        if secret.get("YOUTUBE_CLIENT_ID"):
+            env["YOUTUBE_CLIENT_ID"] = secret.get("YOUTUBE_CLIENT_ID")
+        if secret.get("YOUTUBE_CLIENT_SECRET"):
+            env["YOUTUBE_CLIENT_SECRET"] = secret.get("YOUTUBE_CLIENT_SECRET")
+
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
             env[key] = value

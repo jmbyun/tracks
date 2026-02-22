@@ -11,6 +11,7 @@ from .connection.google import router as connection_google_router
 from .connection.instagram import router as connection_instagram_router
 from .connection.twitter import router as connection_twitter_router
 from .connection.smartthings import router as connection_smartthings_router
+from .connection.youtube import router as connection_youtube_router
 from .telegram import router as telegram_router
 from .browser import router as browser_router
 
@@ -25,5 +26,6 @@ routers = [
     connection_instagram_router,
     connection_twitter_router,
     connection_smartthings_router,
+    connection_youtube_router,
     agents_router,
 ]

@@ -160,6 +160,12 @@ class CodexClient:
             env["SMARTTHINGS_CLIENT_ID"] = secret_dict["SMARTTHINGS_CLIENT_ID"]
         if secret_dict.get("SMARTTHINGS_CLIENT_SECRET"):
             env["SMARTTHINGS_CLIENT_SECRET"] = secret_dict["SMARTTHINGS_CLIENT_SECRET"]
+
+        # Add YouTube Auth Secrets to environment
+        if secret_dict.get("YOUTUBE_CLIENT_ID"):
+            env["YOUTUBE_CLIENT_ID"] = secret_dict["YOUTUBE_CLIENT_ID"]
+        if secret_dict.get("YOUTUBE_CLIENT_SECRET"):
+            env["YOUTUBE_CLIENT_SECRET"] = secret_dict["YOUTUBE_CLIENT_SECRET"]
             
         for key, value in secret_dict.items():
             env[key] = value
