@@ -232,6 +232,14 @@ function SettingsPage() {
                     )}
                 </header>
 
+                <section className="settings-section">
+                    <div className="connections-link-container">
+                        <button className="connect-services-btn" onClick={() => window.location.href = '/connections'}>
+                            <i className="fa fa-link"></i> Connect to External Services
+                        </button>
+                    </div>
+                </section>
+
                 <section className="settings-section active-client-section">
                     <h2>Active LLM Client</h2>
                     <div className="config-grid">

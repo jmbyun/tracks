@@ -6,7 +6,7 @@ import os
 import shutil
 import asyncio
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Security, HTTPException, status, Depends
+from fastapi import FastAPI, Security, HTTPException, status, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
@@ -90,11 +90,21 @@ async def _initial_heartbeat_trigger():
         print(f"[app] User activity detected, skipping initial heartbeat")
 
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
-def verify_api_key(credentials: HTTPAuthorizationCredentials = Depends(security)):
+def verify_api_key(request: Request, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify API key from Authorization header."""
+    # Skip API key checks for Google OAuth callbacks because it's a browser redirect
+    if request.url.path.startswith("/api/connection/google/callback"):
+        return None
+        
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authenticated"
+        )
+        
     if settings.API_KEY and credentials.credentials != settings.API_KEY:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

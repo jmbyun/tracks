@@ -1,0 +1,29 @@
+/* Inherits core structure from SettingsPage.css */
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-badge.on {
+    background-color: rgba(46, 213, 115, 0.2);
+    color: #2ed573;
+}
+
+.status-badge.off {
+    background-color: rgba(255, 71, 87, 0.2);
+    color: #ff4757;
+}
+
+.connections-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    color: #a0a0b0;
+}

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     # Server configuration
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 8540
+    SERVER_BASE_URL: str = "http://localhost:8540"
+    FRONTEND_BASE_URL: str = "http://localhost:8541"
     API_KEY: str = "tracks!"
     
     # Logging

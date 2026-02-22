@@ -5,12 +5,13 @@ import ChatArea from './components/ChatArea'
 import LoginPage from './components/LoginPage'
 import SettingsPage from './components/SettingsPage'
 import BrowserPage from './components/BrowserPage'
+import ConnectionsPage from './components/ConnectionsPage'
 import { getApiKey, getAuthHeaders, clearApiKey, validateApiKey } from './auth'
 
 
 import './App.css'
 
-function ChatPage({ onLogout, showSettings, showBrowser }) {
+function ChatPage({ onLogout, showSettings, showBrowser, showConnections }) {
 
   const navigate = useNavigate()
 
@@ -341,6 +342,8 @@ function ChatPage({ onLogout, showSettings, showBrowser }) {
           <SettingsPage />
         ) : showBrowser ? (
           <BrowserPage />
+        ) : showConnections ? (
+          <ConnectionsPage />
         ) : (
           <ChatArea
 
@@ -407,9 +410,8 @@ function App() {
       <Route path="/sessions/:sessionId" element={<ChatPage onLogout={handleLogout} />} />
       <Route path="/settings" element={<ChatPage onLogout={handleLogout} showSettings={true} />} />
       <Route path="/browser" element={<ChatPage onLogout={handleLogout} showBrowser={true} />} />
+      <Route path="/connections" element={<ChatPage onLogout={handleLogout} showConnections={true} />} />
     </Routes>
-
-
   )
 }
 

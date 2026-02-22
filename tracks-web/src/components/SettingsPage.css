@@ -168,6 +168,41 @@ input:checked+.slider:before {
     cursor: not-allowed;
 }
 
+/* Connect Services Button Styles */
+.connections-link-container {
+    display: flex;
+    width: 100%;
+}
+
+.connect-services-btn {
+    width: 100%;
+    padding: 16px 20px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.connect-services-btn:hover {
+    background-color: var(--bg-primary);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.connect-services-btn i {
+    font-size: 1.2rem;
+}
+
 /* Vault Styles */
 .vault-list {
     display: flex;
@@ -199,11 +234,14 @@ input:checked+.slider:before {
 .vault-value {
     font-family: monospace;
     color: var(--text-primary);
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .vault-actions {
     display: flex;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .vault-edit-row {
