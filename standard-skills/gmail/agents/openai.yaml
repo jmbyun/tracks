@@ -1,3 +1,4 @@
 interface:
-  display_name: "Gmail"
-  short_description: "Help with Gmail tasks and workflows"
+  display_name: "Gmail Integration"
+  short_description: "Read, search, and send emails using your Gmail account"
+  default_prompt: "Search my email for our latest discussion on the project, and then summarize the thread."
