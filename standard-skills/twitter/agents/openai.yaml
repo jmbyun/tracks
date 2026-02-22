@@ -1,0 +1,4 @@
+interface:
+  display_name: "X (Twitter) Integration"
+  short_description: "Manage tweets, search, and monitor profiles using X (Twitter)."
+  default_prompt: "Search recent tweets for AI and summarize them."

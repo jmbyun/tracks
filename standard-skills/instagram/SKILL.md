@@ -47,6 +47,12 @@ Posts a new image and caption to the user's Instagram feed. Note: The URL must b
 python scripts/publish_media.py --image-url "https://example.com/image.jpg" --caption "Hello world!"
 ```
 
+### 6. Search Media
+Searches the user's recent Instagram posts for specific keywords in the captions.
+```bash
+python scripts/search_media.py "query text" [--limit 50]
+```
+
 ## Usage Guidelines
 - **Publishing requires public images:** The `publish_media.py` script tells Instagram to fetch the image from a URL. You cannot post local files on the computer directly; they must be hosted somewhere accessible by Instagram.
 - **Tokens**: The skills automatically refresh the 60-day token.

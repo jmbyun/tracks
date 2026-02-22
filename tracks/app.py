@@ -95,10 +95,12 @@ security = HTTPBearer(auto_error=False)
 
 def verify_api_key(request: Request, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify API key from Authorization header."""
-    # Skip API key checks for Google & Instagram OAuth callbacks because it's a browser redirect
+    # Skip API key checks for Google, Instagram & Twitter OAuth callbacks because it's a browser redirect
     if request.url.path.startswith("/api/connection/google/callback"):
         return None
     if request.url.path.startswith("/api/connection/instagram/callback"):
+        return None
+    if request.url.path.startswith("/api/connection/twitter/callback"):
         return None
         
     if not credentials:

@@ -73,6 +73,26 @@ function ConnectionsPage() {
         }
     }
 
+    const handleConnectTwitter = async () => {
+        try {
+            const res = await fetch('/api/connection/twitter/auth-url', {
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                const data = await res.json()
+                if (data.auth_url) {
+                    window.location.href = data.auth_url
+                }
+            } else {
+                const err = await res.json()
+                showStatus(err.detail || 'Failed to initialize Twitter login', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('Failed to connect to Twitter', 'error')
+        }
+    }
+
     const handleRemoveGoogle = async () => {
         if (!confirm('Are you sure you want to remove the Google connection?')) return
         try {
@@ -111,8 +131,28 @@ function ConnectionsPage() {
         }
     }
 
+    const handleRemoveTwitter = async () => {
+        if (!confirm('Are you sure you want to remove the Twitter connection?')) return
+        try {
+            const res = await fetch('/api/connection/twitter/remove', {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                showStatus('Twitter connection removed', 'success')
+                fetchVault()
+            } else {
+                showStatus('Failed to remove Twitter connection', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('An error occurred during removal', 'error')
+        }
+    }
+
     const isGoogleConnected = vault.some(v => v.key === 'GOOGLE_OAUTH_REFRESH_TOKEN')
     const isInstagramConnected = vault.some(v => v.key === 'INSTAGRAM_OAUTH_TOKEN')
+    const isTwitterConnected = vault.some(v => v.key === 'TWITTER_OAUTH_TOKEN' || v.key === 'TWITTER_REFRESH_TOKEN')
 
     if (isLoading) {
         return <div className="connections-loading">Loading connections...</div>
@@ -181,6 +221,31 @@ function ConnectionsPage() {
                                     </button>
                                 ) : (
                                     <button className="edit-button" style={{ backgroundColor: '#E1306C', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectInstagram} title="Connect">
+                                        <i className="fa fa-link"></i> Connect
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Twitter (X) */}
+                        <div className="vault-item">
+                            <div className="vault-info">
+                                <span className="vault-key" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.1rem' }}>
+                                    <i className="fa fa-twitter" style={{ color: '#1DA1F2', fontSize: '1.3rem' }}></i> X (Twitter)
+                                </span>
+                                <span className="vault-value">
+                                    <span className={`status-badge ${isTwitterConnected ? 'on' : 'off'}`}>
+                                        {isTwitterConnected ? 'Connected' : 'Not Connected'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className="vault-actions">
+                                {isTwitterConnected ? (
+                                    <button className="delete-button" onClick={handleRemoveTwitter} title="Remove Connection">
+                                        <i className="fa fa-unlink"></i> Disconnect
+                                    </button>
+                                ) : (
+                                    <button className="edit-button" style={{ backgroundColor: '#1DA1F2', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectTwitter} title="Connect">
                                         <i className="fa fa-link"></i> Connect
                                     </button>
                                 )}

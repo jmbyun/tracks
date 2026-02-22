@@ -149,6 +149,12 @@ class CodexClient:
         if secret_dict.get("INSTAGRAM_CLIENT_SECRET"):
             env["INSTAGRAM_CLIENT_SECRET"] = secret_dict["INSTAGRAM_CLIENT_SECRET"]
             
+        # Add Twitter Auth Secrets to environment
+        if secret_dict.get("TWITTER_CLIENT_ID"):
+            env["TWITTER_CLIENT_ID"] = secret_dict["TWITTER_CLIENT_ID"]
+        if secret_dict.get("TWITTER_CLIENT_SECRET"):
+            env["TWITTER_CLIENT_SECRET"] = secret_dict["TWITTER_CLIENT_SECRET"]
+            
         for key, value in secret_dict.items():
             env[key] = value
 
