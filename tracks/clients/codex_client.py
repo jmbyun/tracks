@@ -248,6 +248,12 @@ class CodexClient:
                 print("FULL STDERR:")
                 print(full_stderr.decode('utf-8', errors='replace'))
                 print("="*50 + "\n")
+                yield (OUTPUT_TAG_STDERR, "non zero exit code\n")
+                yield (OUTPUT_TAG_STDERR, f"Codex exec ended with error (exit code: {return_code})\n")
+                yield (OUTPUT_TAG_STDERR, "FULL STDOUT:\n")
+                yield (OUTPUT_TAG_STDERR, full_stdout.decode('utf-8', errors='replace'))
+                yield (OUTPUT_TAG_STDERR, "FULL STDERR:\n")
+                yield (OUTPUT_TAG_STDERR, full_stderr.decode('utf-8', errors='replace'))
             
         finally:
             # Ensure process is cleaned up
@@ -307,6 +313,11 @@ class CodexClient:
             elif trimmed_line == 'tokens used':
                 output_tag = 'tokens_used'
                 continue
+            elif trimmed_line == 'non zero exit code':
+                output_tag = 'error'
+                yield ('title', 'Error')
+                continue
+                
             
             # Handle metadata delimiters
             if not meta_done and re.match(r'^[-]{3,}$', trimmed_line):

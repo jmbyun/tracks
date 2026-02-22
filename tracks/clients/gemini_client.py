@@ -361,7 +361,9 @@ class GeminiClient:
                 print("FULL STDERR:")
                 print(full_stderr.decode('utf-8', errors='replace'))
                 print("="*50 + "\n")
-            
+                yield (OUTPUT_TAG_STDERR, f"Gemini exec ended with error (exit code: {return_code})\n")
+                yield (OUTPUT_TAG_STDERR, f"FULL STDOUT:\n{full_stdout.decode('utf-8', errors='replace')}\n")
+
         finally:
             # Ensure process is cleaned up
             os.close(master_fd)
