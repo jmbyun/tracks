@@ -18,15 +18,15 @@ If a script fails with missing credentials or authentication errors, instruct th
 The following scripts are available in the `scripts/` directory:
 
 ### 1. Listing Emails
-Lists the most recent emails in the inbox.
+Lists the most recent emails in the inbox. Supports pagination.
 ```bash
-python scripts/list_messages.py [--max-results 10] [--label INBOX]
+python scripts/list_messages.py [--max-results 10] [--label INBOX] [--page-token TOKEN]
 ```
 
 ### 2. Searching Emails
-Searches emails using standard Gmail search queries (e.g., "from:alice is:unread", "subject:meeting").
+Searches emails using standard Gmail search queries (e.g., "from:alice is:unread", "subject:meeting"). Supports pagination.
 ```bash
-python scripts/search_messages.py "query string" [--max-results 10]
+python scripts/search_messages.py "query string" [--max-results 10] [--page-token TOKEN]
 ```
 
 ### 3. Reading an Email

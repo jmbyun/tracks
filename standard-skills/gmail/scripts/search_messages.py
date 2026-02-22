@@ -4,18 +4,22 @@ import argparse
 import urllib.parse
 from auth import make_gmail_request
 
-def search_messages(query, max_results=10):
+def search_messages(query, max_results=10, page_token=None):
     try:
         # Build query parameters
         params = {
             'q': query,
             'maxResults': str(max_results)
         }
+        if page_token:
+            params['pageToken'] = page_token
+            
         params_str = urllib.parse.urlencode(params)
         
         # 1. Search messages
         results = make_gmail_request(f"messages?{params_str}")
         messages = results.get('messages', [])
+        next_page = results.get('nextPageToken', None)
         
         if not messages:
             print(f"No messages found matching query: '{query}'")
@@ -41,6 +45,9 @@ def search_messages(query, max_results=10):
             print(f"Snippet: {msg.get('snippet', '')}")
             print("-" * 50)
             
+        if next_page:
+            print(f"\n[More messages available] To view next page, add: --page-token {next_page}")
+            
     except Exception as e:
         print(f"An error occurred: {e}", file=sys.stderr)
         sys.exit(1)
@@ -48,7 +55,8 @@ def search_messages(query, max_results=10):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Search emails in Gmail using a query string.')
     parser.add_argument('query', type=str, help='The search query (e.g., "from:alice@example.com is:unread")')
-    parser.add_argument('--max-results', type=int, default=10, help='Maximum number of emails to return')
+    parser.add_argument('--max-results', type=int, default=10, help='Maximum number of emails to return (max 500)')
+    parser.add_argument('--page-token', type=str, help='Token for the next page of results')
     args = parser.parse_args()
     
-    search_messages(args.query, max_results=args.max_results)
+    search_messages(args.query, max_results=args.max_results, page_token=args.page_token)
