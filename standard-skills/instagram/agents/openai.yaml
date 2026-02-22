@@ -1,0 +1,4 @@
+interface:
+  display_name: "Instagram Integration"
+  short_description: "Manage posts, media, and comments using Instagram."
+  default_prompt: "List my latest 5 Instagram posts and summarize my comments."

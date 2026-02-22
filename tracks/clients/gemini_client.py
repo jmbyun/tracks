@@ -219,6 +219,18 @@ class GeminiClient:
         env['AGENT_HOME_PATH'] = settings.AGENT_HOME_PATH
         env['API_KEY'] = settings.API_KEY
 
+        # Add Google Auth Secrets to environment
+        if secret.get("GOOGLE_OAUTH_TOKEN"):
+            env["GOOGLE_OAUTH_TOKEN"] = secret.get("GOOGLE_OAUTH_TOKEN")
+        if secret.get("GOOGLE_OAUTH_REFRESH_TOKEN"):
+            env["GOOGLE_OAUTH_REFRESH_TOKEN"] = secret.get("GOOGLE_OAUTH_REFRESH_TOKEN")
+
+        # Add Instagram Auth Secrets to environment
+        if secret.get("INSTAGRAM_CLIENT_ID"):
+            env["INSTAGRAM_CLIENT_ID"] = secret.get("INSTAGRAM_CLIENT_ID")
+        if secret.get("INSTAGRAM_CLIENT_SECRET"):
+            env["INSTAGRAM_CLIENT_SECRET"] = secret.get("INSTAGRAM_CLIENT_SECRET")
+
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
             env[key] = value

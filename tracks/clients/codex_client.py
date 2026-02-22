@@ -137,7 +137,19 @@ class CodexClient:
             env[key] = value
 
         # Add secret variables to environment
-        for key, value in secret.to_dict().items():
+        secret_dict = secret.to_dict()
+        if secret_dict.get("GOOGLE_OAUTH_TOKEN"):
+            env["GOOGLE_OAUTH_TOKEN"] = secret_dict["GOOGLE_OAUTH_TOKEN"]
+        if secret_dict.get("GOOGLE_OAUTH_REFRESH_TOKEN"):
+            env["GOOGLE_OAUTH_REFRESH_TOKEN"] = secret_dict["GOOGLE_OAUTH_REFRESH_TOKEN"]
+            
+        # Add Instagram Auth Secrets to environment
+        if secret_dict.get("INSTAGRAM_CLIENT_ID"):
+            env["INSTAGRAM_CLIENT_ID"] = secret_dict["INSTAGRAM_CLIENT_ID"]
+        if secret_dict.get("INSTAGRAM_CLIENT_SECRET"):
+            env["INSTAGRAM_CLIENT_SECRET"] = secret_dict["INSTAGRAM_CLIENT_SECRET"]
+            
+        for key, value in secret_dict.items():
             env[key] = value
 
         # Create PTY for stdout (forces line buffering in child process)

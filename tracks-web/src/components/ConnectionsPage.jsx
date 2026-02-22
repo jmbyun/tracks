@@ -53,6 +53,26 @@ function ConnectionsPage() {
         }
     }
 
+    const handleConnectInstagram = async () => {
+        try {
+            const res = await fetch('/api/connection/instagram/auth-url', {
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                const data = await res.json()
+                if (data.auth_url) {
+                    window.location.href = data.auth_url
+                }
+            } else {
+                const err = await res.json()
+                showStatus(err.detail || 'Failed to initialize Instagram login', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('Failed to connect to Instagram', 'error')
+        }
+    }
+
     const handleRemoveGoogle = async () => {
         if (!confirm('Are you sure you want to remove the Google connection?')) return
         try {
@@ -72,7 +92,27 @@ function ConnectionsPage() {
         }
     }
 
+    const handleRemoveInstagram = async () => {
+        if (!confirm('Are you sure you want to remove the Instagram connection?')) return
+        try {
+            const res = await fetch('/api/connection/instagram/remove', {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                showStatus('Instagram connection removed', 'success')
+                fetchVault()
+            } else {
+                showStatus('Failed to remove Instagram connection', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('An error occurred during removal', 'error')
+        }
+    }
+
     const isGoogleConnected = vault.some(v => v.key === 'GOOGLE_OAUTH_REFRESH_TOKEN')
+    const isInstagramConnected = vault.some(v => v.key === 'INSTAGRAM_OAUTH_TOKEN')
 
     if (isLoading) {
         return <div className="connections-loading">Loading connections...</div>
@@ -97,6 +137,7 @@ function ConnectionsPage() {
                     </p>
 
                     <div className="vault-list">
+                        {/* Google / GMail */}
                         <div className="vault-item">
                             <div className="vault-info">
                                 <span className="vault-key" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.1rem' }}>
@@ -115,6 +156,31 @@ function ConnectionsPage() {
                                     </button>
                                 ) : (
                                     <button className="edit-button" style={{ backgroundColor: '#4ea8de', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectGoogle} title="Connect">
+                                        <i className="fa fa-link"></i> Connect
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Instagram */}
+                        <div className="vault-item">
+                            <div className="vault-info">
+                                <span className="vault-key" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.1rem' }}>
+                                    <i className="fa fa-instagram" style={{ color: '#E1306C', fontSize: '1.3rem' }}></i> Instagram
+                                </span>
+                                <span className="vault-value">
+                                    <span className={`status-badge ${isInstagramConnected ? 'on' : 'off'}`}>
+                                        {isInstagramConnected ? 'Connected' : 'Not Connected'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className="vault-actions">
+                                {isInstagramConnected ? (
+                                    <button className="delete-button" onClick={handleRemoveInstagram} title="Remove Connection">
+                                        <i className="fa fa-unlink"></i> Disconnect
+                                    </button>
+                                ) : (
+                                    <button className="edit-button" style={{ backgroundColor: '#E1306C', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectInstagram} title="Connect">
                                         <i className="fa fa-link"></i> Connect
                                     </button>
                                 )}

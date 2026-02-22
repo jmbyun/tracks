@@ -8,7 +8,9 @@ from .heartbeat import router as heartbeat_router
 from .telegram import router as telegram_router
 from .settings import router as settings_router
 from .browser import router as browser_router
-from .connection.google import router as google_router
+from .connection.google import router as connection_google_router
+from .connection.instagram import router as connection_instagram_router
+from .agents import router as agents_router
 
 
 routers = [
@@ -18,6 +20,7 @@ routers = [
     telegram_router,
     settings_router,
     browser_router,
-    google_router,
+    connection_google_router,
+    connection_instagram_router,
+    agents_router,
 ]
-
