@@ -8,7 +8,7 @@ from ...config import settings
 from ...secret import secret
 
 # In local development, allow HTTP for oauthlib
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 GOOGLE_CLIENT_ID = secret.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = secret.get("GOOGLE_CLIENT_SECRET")
@@ -16,7 +16,7 @@ GOOGLE_CLIENT_SECRET = secret.get("GOOGLE_CLIENT_SECRET")
 
 router = APIRouter(prefix="/api/connection/google", tags=["connection"])
 
-SCOPES = ["https://mail.google.com/"]
+SCOPES = ['https://mail.google.com/']
 
 def get_client_config():
     return {
@@ -35,16 +35,16 @@ def get_auth_url(request: Request):
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(status_code=500, detail="Google client credentials not configured in secret.py")
 
-    redirect_uri = f"{settings.FRONTEND_BASE_URL.rstrip("/")}/api/connection/google/callback"
+    redirect_uri = f"{settings.FRONTEND_BASE_URL.rstrip('/')}/api/connection/google/callback"
     
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         get_client_config(), scopes=SCOPES)
     flow.redirect_uri = redirect_uri
     
     auth_url, state = flow.authorization_url(
-        access_type="offline",
-        include_granted_scopes="true",
-        prompt="consent"
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='consent'
     )
     
     vault.set("GOOGLE_OAUTH_STATE", state)
@@ -56,7 +56,7 @@ def google_callback(request: Request, state: str = None, code: str = None):
     if not code:
         raise HTTPException(status_code=400, detail="Missing authorization code")
         
-    redirect_uri = f"{settings.FRONTEND_BASE_URL.rstrip("/")}/api/connection/google/callback"
+    redirect_uri = f"{settings.FRONTEND_BASE_URL.rstrip('/')}/api/connection/google/callback"
     
     saved_state = vault.get("GOOGLE_OAUTH_STATE")
     if saved_state and state != saved_state:
@@ -84,7 +84,7 @@ def google_callback(request: Request, state: str = None, code: str = None):
     vault.delete("GOOGLE_OAUTH_STATE")
         
     # Redirect user back to connections page on frontend
-    return RedirectResponse(url=f"{settings.FRONTEND_BASE_URL.rstrip("/")}/connections")
+    return RedirectResponse(url=f"{settings.FRONTEND_BASE_URL.rstrip('/')}/connections")
 
 @router.delete("/remove")
 def remove_google_connection():

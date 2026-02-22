@@ -6,6 +6,7 @@ import json
 import re
 
 from tracks.vault import vault
+from tracks.secret import secret
 from tracks.config import settings
 
 OUTPUT_TAG_STDOUT = 0
@@ -129,9 +130,14 @@ class CodexClient:
         env['TERM'] = 'dumb'  # Simple terminal to avoid escape sequences
         env['CODEX_HOME'] = os.path.join(settings.STORAGE_PATH, "codex_homes", self.profile_id)
         env['AGENT_HOME_PATH'] = settings.AGENT_HOME_PATH
+        env['API_KEY'] = settings.API_KEY
         
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
+            env[key] = value
+
+        # Add secret variables to environment
+        for key, value in secret.to_dict().items():
             env[key] = value
 
         # Create PTY for stdout (forces line buffering in child process)

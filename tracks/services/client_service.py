@@ -65,7 +65,10 @@ class ClientState:
     def get_next_client_type(self):
         """Get the next client type in the order."""
         client_types_order = settings.AGENT_USE_ORDER.split(",")
-        current_index = client_types_order.index(self._client_type)
+        try:
+            current_index = client_types_order.index(self._client_type)
+        except ValueError:
+            current_index = 0
         next_index = (current_index + 1) % len(client_types_order)
         return client_types_order[next_index]
             

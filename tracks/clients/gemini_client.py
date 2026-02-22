@@ -9,6 +9,7 @@ from pathlib import Path
 
 from tracks.config import settings
 from tracks.vault import vault
+from tracks.secret import secret
 
 OUTPUT_TAG_STDOUT = 0
 OUTPUT_TAG_STDERR = 1
@@ -216,9 +217,14 @@ class GeminiClient:
         env['TERM'] = 'dumb'  # Simple terminal to avoid escape sequences
         # env['GEMINI_CONFIG_DIR'] = os.path.join(settings.STORAGE_PATH, "agent_configs", "gemini")
         env['AGENT_HOME_PATH'] = settings.AGENT_HOME_PATH
+        env['API_KEY'] = settings.API_KEY
 
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
+            env[key] = value
+
+        # Add secret variables to environment
+        for key, value in secret.to_dict().items():
             env[key] = value
 
         # Create PTY for stdout (forces line buffering in child process)
