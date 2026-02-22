@@ -237,6 +237,12 @@ class GeminiClient:
         if secret.get("TWITTER_CLIENT_SECRET"):
             env["TWITTER_CLIENT_SECRET"] = secret.get("TWITTER_CLIENT_SECRET")
 
+        # Add SmartThings Auth Secrets to environment
+        if secret.get("SMARTTHINGS_CLIENT_ID"):
+            env["SMARTTHINGS_CLIENT_ID"] = secret.get("SMARTTHINGS_CLIENT_ID")
+        if secret.get("SMARTTHINGS_CLIENT_SECRET"):
+            env["SMARTTHINGS_CLIENT_SECRET"] = secret.get("SMARTTHINGS_CLIENT_SECRET")
+
         # Add vault variables to environment
         for key, value in vault.to_dict().items():
             env[key] = value

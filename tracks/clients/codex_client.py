@@ -155,6 +155,12 @@ class CodexClient:
         if secret_dict.get("TWITTER_CLIENT_SECRET"):
             env["TWITTER_CLIENT_SECRET"] = secret_dict["TWITTER_CLIENT_SECRET"]
             
+        # Add SmartThings Auth Secrets to environment
+        if secret_dict.get("SMARTTHINGS_CLIENT_ID"):
+            env["SMARTTHINGS_CLIENT_ID"] = secret_dict["SMARTTHINGS_CLIENT_ID"]
+        if secret_dict.get("SMARTTHINGS_CLIENT_SECRET"):
+            env["SMARTTHINGS_CLIENT_SECRET"] = secret_dict["SMARTTHINGS_CLIENT_SECRET"]
+            
         for key, value in secret_dict.items():
             env[key] = value
 

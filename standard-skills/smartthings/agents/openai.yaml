@@ -1,0 +1,4 @@
+interface:
+  display_name: "Samsung SmartThings"
+  short_description: "List and control smart home devices via SmartThings."
+  default_prompt: "Turn off the living room lights."

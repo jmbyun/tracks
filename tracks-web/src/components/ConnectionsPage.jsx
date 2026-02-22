@@ -93,6 +93,26 @@ function ConnectionsPage() {
         }
     }
 
+    const handleConnectSmartThings = async () => {
+        try {
+            const res = await fetch('/api/connection/smartthings/auth-url', {
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                const data = await res.json()
+                if (data.auth_url) {
+                    window.location.href = data.auth_url
+                }
+            } else {
+                const err = await res.json()
+                showStatus(err.detail || 'Failed to initialize SmartThings login', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('Failed to connect to SmartThings', 'error')
+        }
+    }
+
     const handleRemoveGoogle = async () => {
         if (!confirm('Are you sure you want to remove the Google connection?')) return
         try {
@@ -150,9 +170,29 @@ function ConnectionsPage() {
         }
     }
 
+    const handleRemoveSmartThings = async () => {
+        if (!confirm('Are you sure you want to remove the SmartThings connection?')) return
+        try {
+            const res = await fetch('/api/connection/smartthings/remove', {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            })
+            if (res.ok) {
+                showStatus('SmartThings connection removed', 'success')
+                fetchVault()
+            } else {
+                showStatus('Failed to remove SmartThings connection', 'error')
+            }
+        } catch (err) {
+            console.error(err)
+            showStatus('An error occurred during removal', 'error')
+        }
+    }
+
     const isGoogleConnected = vault.some(v => v.key === 'GOOGLE_OAUTH_REFRESH_TOKEN')
     const isInstagramConnected = vault.some(v => v.key === 'INSTAGRAM_OAUTH_TOKEN')
     const isTwitterConnected = vault.some(v => v.key === 'TWITTER_OAUTH_TOKEN' || v.key === 'TWITTER_REFRESH_TOKEN')
+    const isSmartThingsConnected = vault.some(v => v.key === 'SMARTTHINGS_OAUTH_TOKEN')
 
     if (isLoading) {
         return <div className="connections-loading">Loading connections...</div>
@@ -246,6 +286,31 @@ function ConnectionsPage() {
                                     </button>
                                 ) : (
                                     <button className="edit-button" style={{ backgroundColor: '#1DA1F2', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectTwitter} title="Connect">
+                                        <i className="fa fa-link"></i> Connect
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* SmartThings */}
+                        <div className="vault-item">
+                            <div className="vault-info">
+                                <span className="vault-key" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.1rem' }}>
+                                    <i className="fa fa-home" style={{ color: '#00a3ff', fontSize: '1.3rem' }}></i> SmartThings
+                                </span>
+                                <span className="vault-value">
+                                    <span className={`status-badge ${isSmartThingsConnected ? 'on' : 'off'}`}>
+                                        {isSmartThingsConnected ? 'Connected' : 'Not Connected'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className="vault-actions">
+                                {isSmartThingsConnected ? (
+                                    <button className="delete-button" onClick={handleRemoveSmartThings} title="Remove Connection">
+                                        <i className="fa fa-unlink"></i> Disconnect
+                                    </button>
+                                ) : (
+                                    <button className="edit-button" style={{ backgroundColor: '#00a3ff', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleConnectSmartThings} title="Connect">
                                         <i className="fa fa-link"></i> Connect
                                     </button>
                                 )}
