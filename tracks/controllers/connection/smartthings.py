@@ -109,6 +109,58 @@ def smartthings_callback(request: Request, state: str = None, code: str = None, 
     # Redirect user back to connections page on frontend
     return RedirectResponse(url=f"{settings.FRONTEND_BASE_URL.rstrip('/')}/connections")
 
+@router.post("/webhook")
+async def smartthings_webhook(request: Request):
+    """
+    Handle SmartThings WebApp Lifecycle Events (like CONFIRMATION).
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON body")
+        
+    lifecycle = body.get("lifecycle")
+    
+    if lifecycle == "CONFIRMATION":
+        confirmation_data = body.get("confirmationData", {})
+        confirmation_url = confirmation_data.get("confirmationUrl")
+        
+        if confirmation_url:
+            print(f"[SmartThings] Received CONFIRMATION request. Verifying URL: {confirmation_url}")
+            try:
+                # Automatically verify the URL by making a GET request
+                req = urllib.request.Request(confirmation_url, method="GET")
+                with urllib.request.urlopen(req) as response:
+                    print(f"[SmartThings] Verified successfully (HTTP {response.status})")
+            except Exception as e:
+                print(f"[SmartThings] Verification failed: {e}")
+                
+        return {"targetUrl": settings.SERVER_BASE_URL + "/api/connection/smartthings/webhook"}
+
+    elif lifecycle == "CONFIGURATION":
+        return {
+            "configurationData": {
+                "initialize": {
+                    "name": "Tracks App",
+                    "description": "Tracks SmartThings Integration",
+                    "id": "tracks-app-1",
+                    "permissions": ["r:devices:*", "x:devices:*", "r:locations:*"],
+                    "firstPageId": "1"
+                },
+                "page": {
+                    "pageId": "1",
+                    "name": "Tracks Setup",
+                    "nextPageId": None,
+                    "previousPageId": None,
+                    "complete": True,
+                    "sections": []
+                }
+            }
+        }
+    
+    # Return 200 OK for other lifecycle events (INSTALL, UPDATE, UNINSTALL, OAUTH_CALLBACK)
+    return {}
+
 @router.delete("/remove")
 def remove_smartthings_connection():
     vault.delete("SMARTTHINGS_OAUTH_TOKEN")

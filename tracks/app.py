@@ -104,6 +104,8 @@ def verify_api_key(request: Request, credentials: HTTPAuthorizationCredentials =
         return None
     if request.url.path.startswith("/api/connection/smartthings/callback"):
         return None
+    if request.url.path.startswith("/api/connection/smartthings/webhook"):
+        return None
     if request.url.path.startswith("/api/connection/youtube/callback"):
         return None
         
